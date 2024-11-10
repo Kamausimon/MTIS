@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 dotenv.config({ path: "./config/.env" });
 
-const DB =  
+const DB = `mongodb+srv://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@cluster0.fby3h.mongodb.net/`;
 
 const connectToDatabase = async () => {
   try {
@@ -17,6 +17,6 @@ const connectToDatabase = async () => {
     console.log("Database connection failed");
     process.exit(1);
   }
-}
+};
 
 module.exports = connectToDatabase;
