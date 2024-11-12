@@ -5,6 +5,7 @@ const categorySchema = new mongoose.Schema({
   description: { type: String, required: true },
   parent_id: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
   children: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
+  level: { type: Number, default: 0 },
   tenant_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Tenant",
