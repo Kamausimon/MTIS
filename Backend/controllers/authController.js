@@ -270,3 +270,15 @@ exports.restrictToAdmin = (req, res, next) => {
     next();
   }
 };
+
+exports.restrictToManager = (req, res, next) => {
+  if (req.user.role !== "manager") {
+    return next(
+      new AppError("You do not have permission to perform this action", 403)
+    );
+  }
+
+  if (req.user.role === "manager") {
+    next();
+  }
+};
