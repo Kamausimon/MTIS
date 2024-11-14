@@ -258,3 +258,15 @@ exports.updatePassword = async (req, res, next) => {
     next(new AppError("Error updating password", 500));
   }
 };
+
+exports.restrictToAdmin = (req, res, next) => {
+  if (req.user.role !== "admin") {
+    return next(
+      new AppError("You do not have permission to perform this action", 403)
+    );
+  }
+
+  if (req.user.role === "admin") {
+    next();
+  }
+};
