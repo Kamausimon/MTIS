@@ -9,11 +9,11 @@ const dotenv = require("dotenv");
 
 dotenv.config({ path: "./../config/.env" });
 
-//create a jwt sign token
-const signToken = (id) => {
-  return (
-    jwt.sign({ id }),
-    process.env.JTW_SECRET,
+//create a jwt sign token function
+const signToken = (user) => {
+  return jwt.sign(
+    { id: user._id, tenant_id: user.tenant_id },
+    process.env.JWT_SECRET,
     {
       expiresIn: process.env.JWT_EXPIRES_IN,
     }
@@ -23,7 +23,7 @@ const signToken = (id) => {
 //create a send token function
 const createSendToken = (user, statusCode, res) => {
   //create a jwt token
-  const token = signToken(user._id);
+  const token = signToken(user);
 
   //create a cookie
   const cookieOptions = {
@@ -46,7 +46,7 @@ const createSendToken = (user, statusCode, res) => {
     status: "success",
     token,
     data: {
-      user: user,
+      user,
     },
   });
 };
@@ -59,7 +59,11 @@ exports.signup = async (req, res, next) => {
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
       role: req.body.role,
+      tenant_id: req.body.tenant_id,
     });
+
+    //generate token
+    createSendToken(newUser, 201, res);
   } catch (err) {
     res.status(400).json({
       status: "fail",
@@ -70,13 +74,13 @@ exports.signup = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, tenant_id } = req.body;
     //check if email and password exist
     if (!email || !password) {
       return next(new AppError("Please provide email and password", 400));
     }
     //check if user exists and password is correct
-    const user = await User.findOne({ email }).select("+password");
+    const user = await User.findOne({ email, tenant_id }).select("+password");
 
     if (!user || !(await user.correctPassword(password, user.password))) {
       return next(new AppError("Incorrect email or password", 401));
@@ -257,6 +261,14 @@ exports.updatePassword = async (req, res, next) => {
     console.error("Error updating password: ", error);
     next(new AppError("Error updating password", 500));
   }
+};
+
+exports.logout = (req, res) => {
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+  res.status(200).json({ status: "success" });
 };
 
 exports.restrictToAdmin = (req, res, next) => {
