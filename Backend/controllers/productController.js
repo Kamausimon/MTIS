@@ -35,6 +35,7 @@ exports.createProduct = async (req, res, next) => {
       name: req.body.name,
       sku: sku,
       description: req.body.description,
+      category: req.body.categoryId,
     });
   } catch (err) {
     res.status(400).json({

@@ -9,7 +9,7 @@ const productSchema = new mongoose.Schema(
     category_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
-      required: true,
+      required: [true, "A product must belong to a category"],
     },
     tenant_id: {
       type: mongoose.Schema.Types.ObjectId,
