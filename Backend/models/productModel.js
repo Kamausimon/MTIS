@@ -6,7 +6,11 @@ const productSchema = new mongoose.Schema(
     sku: { type: String, required: true, unique: true },
     description: { type: String },
 
-    category_id: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
+    category_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
     tenant_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Tenant",
