@@ -28,12 +28,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(hpp()); // Prevent http param pollution
 
 //ROUTES
-const userRouter = require("./routes/userRoutes");
-const productRouter = require("./routes/productRoutes");
-const orderRouter = require("./routes/orderRoutes");
-const supplierRouter = require("./routes/supplierRoutes");
-const categoryRouter = require("./routes/categoryRoutes");
-const auditRouter = require("./routes/auditRoutes");
+const userRouter = require("./routes/userRouter");
+const productRouter = require("./routes/productRouter");
+const orderRouter = require("./routes/orderRouter");
+const supplierRouter = require("./routes/supplierRouter");
+const categoryRouter = require("./routes/categoryRouter");
+const auditRouter = require("./routes/auditRouter");
 
 //ROUTES MIDDLEWARE
 app.use(express.json());
