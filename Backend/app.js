@@ -34,6 +34,7 @@ const orderRouter = require("./routes/orderRouter");
 const supplierRouter = require("./routes/supplierRouter");
 const categoryRouter = require("./routes/categoryRouter");
 const auditRouter = require("./routes/auditRouter");
+const businessRouter = require("./routes/businessRouter");
 
 //ROUTES MIDDLEWARE
 app.use(express.json());
@@ -49,5 +50,6 @@ app.use("/api/v1/orders", orderRouter);
 app.use("/api/v1/suppliers", supplierRouter);
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/audits", auditRouter);
+app.use("/api/v1/businesses", businessRouter);
 
 module.exports = app;
