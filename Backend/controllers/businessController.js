@@ -8,6 +8,7 @@ exports.registerBusiness = async (req, res, next) => {
       businessName: req.body.businessName,
       email: req.body.email,
       businessType: req.body.businessType,
+      admin: adminUser._id,
     });
 
     //create admin user for the business

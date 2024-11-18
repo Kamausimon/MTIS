@@ -6,13 +6,14 @@ const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
 const sendEmail = require("../utils/email");
 const dotenv = require("dotenv");
+const Business = require("../models/businessModel");
 
 dotenv.config({ path: "./../config/.env" });
 
 //create a jwt sign token function
 const signToken = (user) => {
   return jwt.sign(
-    { id: user._id, tenant_id: user.tenant_id },
+    { id: user._id, businessCode: user.businessCode },
     process.env.JWT_SECRET,
     {
       expiresIn: process.env.JWT_EXPIRES_IN,
@@ -53,12 +54,21 @@ const createSendToken = (user, statusCode, res) => {
 
 exports.signup = async (req, res, next) => {
   try {
+    const business = await Business.findOne({
+      businessName: req.body.businessName,
+    });
+
+    if (!business) {
+      return next(new AppError("Business does not exist", 404));
+    }
+
     const newUser = await User.create({
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
       role: req.body.role,
+      businessName: req.body.businessName,
       tenant_id: req.body.tenant_id,
     });
 
@@ -74,13 +84,23 @@ exports.signup = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-    const { email, password, tenant_id } = req.body;
+    const { email, password, businessCode } = req.body;
     //check if email and password exist
-    if (!email || !password) {
-      return next(new AppError("Please provide email and password", 400));
+    if (!email || !password || !businessCode) {
+      return next(
+        new AppError("Please provide email, password and businessCode", 400)
+      );
     }
     //check if user exists and password is correct
-    const user = await User.findOne({ email, tenant_id }).select("+password");
+    const user = await User.findOne({
+      email,
+      businessCode,
+      status: "active",
+    }).select("+password");
+
+    if (user.status === "inactive") {
+      return next(new AppError("Please create a new account", 400));
+    }
 
     if (!user || !(await user.correctPassword(password, user.password))) {
       return next(new AppError("Incorrect email or password", 401));
@@ -114,7 +134,10 @@ exports.protectRoute = async (req, res, next) => {
     //verify token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
     //check if user still exists
-    const currentUser = await User.findById(decoded.id);
+    const currentUser = await User.findOne({
+      _id: decoded.id,
+      businessCode: decoded.businessCode,
+    });
     if (!currentUser) {
       return next(
         new AppError(

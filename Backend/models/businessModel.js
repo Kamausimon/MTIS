@@ -7,6 +7,10 @@ const businessSchema = new mongoose.Schema(
     businessCode: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     status: { type: String, enum: ["active", "inactive"], default: "active" },
+    admin: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   {
     timestamps: true,
