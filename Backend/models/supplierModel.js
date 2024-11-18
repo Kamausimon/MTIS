@@ -12,10 +12,10 @@ const supplierSchema = new mongoose.Schema(
     website: { type: String },
 
     products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
-    tenant_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Tenant",
+    businessCode: {
+      type: String,
       required: true,
+      ref: "Business",
     },
 
     status: {

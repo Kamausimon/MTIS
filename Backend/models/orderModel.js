@@ -32,10 +32,10 @@ const orderSchema = new mongoose.Schema(
     shipping_cost: { type: Number, default: 0 },
     total: { type: Number, required: true },
 
-    tenant_id: {
-      type: mongoose.Schema.ObjectId,
-      ref: "Tenant",
+    businessCode: {
+      type: String,
       required: true,
+      ref: "Business",
     },
   },
   { timestamps: true }

@@ -15,11 +15,10 @@ const userSchema = new mongoose.Schema(
         message: "Passwords are not the same",
       },
     },
-
-    tenant_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Tenant",
+    businessCode: {
+      type: String,
       required: true,
+      ref: "Business",
     },
 
     role: {

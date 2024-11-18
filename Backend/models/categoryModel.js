@@ -7,10 +7,10 @@ const categorySchema = new mongoose.Schema(
     parent_id: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
     children: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
     level: { type: Number, default: 0 },
-    tenant_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Tenant",
+    businessCode: {
+      type: String,
       required: true,
+      ref: "Business",
     },
   },
   {

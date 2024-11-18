@@ -11,10 +11,10 @@ const productSchema = new mongoose.Schema(
       ref: "Category",
       required: [true, "A product must belong to a category"],
     },
-    tenant_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Tenant",
+    businessCode: {
+      type: String,
       required: true,
+      ref: "Business",
     },
 
     price: { type: Number, required: true },
