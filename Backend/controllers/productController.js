@@ -12,11 +12,36 @@ exports.getAllProducts = async (req, res, next) => {
       return next(new AppError("No products found", 404));
     }
 
+    const lowStockProducts = products.filter((product) => product.isLowStock());
+
     res.status(200).sjon({
       status: "success",
       result: products.length,
+      lowStockProducts: lowStockProducts.length,
       data: {
         products,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
+
+exports.getLowStockProducts = async (req, res, next) => {
+  try {
+    const lowStockProdusts = await product.find({
+      businessCode: req.params.businessCode,
+      stock: { $lte: "$low_stock_threshold" },
+    });
+
+    res.status(200).json({
+      status: "success",
+      result: lowStockProdusts.length,
+      data: {
+        products: lowStockProdusts,
       },
     });
   } catch (err) {
@@ -36,6 +61,10 @@ exports.createProduct = async (req, res, next) => {
       sku: sku,
       description: req.body.description,
       category: req.body.categoryId,
+      businessCode: req.body.businessCode,
+      price: req.body.price,
+      stock: req.body.stock,
+      low_stock_threshold: req.body.low_stock_threshold,
     });
   } catch (err) {
     res.status(400).json({

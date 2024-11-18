@@ -34,4 +34,15 @@ const productSchema = new mongoose.Schema(
   }
 );
 
+productSchema.virtual("stock").get(function () {
+  if (this.stock <= this.low_stock_threshold) {
+    return "Low Stock";
+  }
+  return "In Stock";
+});
+
+productSchema.methods.isLowStock = function () {
+  return this.stock <= this.low_stock_threshold;
+};
+
 module.exports = mongoose.model("Product", productSchema);

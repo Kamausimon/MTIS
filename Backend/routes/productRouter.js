@@ -29,4 +29,10 @@ router
     productController.deleteProduct
   ); // Delete product
 
+router.get(
+  "/low-stock",
+  authController.protectRoute,
+  productController.getLowStockProducts
+); // Get low stock products
+
 module.exports = router;
