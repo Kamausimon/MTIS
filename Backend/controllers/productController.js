@@ -81,4 +81,69 @@ exports.createProduct = async (req, res, next) => {
   }
 };
 
-exports.
+exports.getProduct = async (req, res, next) => {
+  try {
+    const product = await product.findById(req.params.id);
+
+    if (!product) {
+      return next(new AppError("Product not found", 404));
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        product,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
+
+exports.updateProduct = async (req, res, next) => {
+  try {
+    const product = await product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!product) {
+      return next(new AppError("Product not found", 404));
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        product,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
+
+exports.deleteProduct = async (req, res, next) => {
+  try {
+    const product = await product.findByIdAndDelete(req.params.id);
+
+    if (!product) {
+      return next(new AppError("Product not found", 404));
+    }
+
+    res.status(204).json({
+      status: "success",
+      data: null,
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
