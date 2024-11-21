@@ -55,6 +55,12 @@ exports.getLowStockProducts = async (req, res, next) => {
 exports.createProduct = async (req, res, next) => {
   try {
     const sku = uuidv4();
+    let imageUrl = "";
+
+    if (req.file) {
+      imageUrl =
+        req.file.location || `/public/uploads/products/${req.file.filename}`;
+    }
 
     const newProduct = await product.create({
       name: req.body.name,
@@ -65,6 +71,7 @@ exports.createProduct = async (req, res, next) => {
       price: req.body.price,
       stock: req.body.stock,
       low_stock_threshold: req.body.low_stock_threshold,
+      image_url: imageUrl,
     });
   } catch (err) {
     res.status(400).json({
@@ -73,3 +80,5 @@ exports.createProduct = async (req, res, next) => {
     });
   }
 };
+
+exports.

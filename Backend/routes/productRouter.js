@@ -1,6 +1,7 @@
 const express = require("express");
 const productController = require("../controllers/productController");
 const authController = require("../controllers/authController");
+const upload = require("../config/multer");
 
 const router = express.Router({ mergeParams: true });
 
@@ -10,7 +11,11 @@ router
   .get(authController.protectRoute, productController.getAllProducts); // Get all products
 router
   .route("/")
-  .post(authController.protectRoute, productController.createProduct); // Create a new product
+  .post(
+    authController.protectRoute,
+    upload.single("image"),
+    productController.createProduct
+  ); // Create a new product
 router
   .route("/:id")
   .get(authController.protectRoute, productController.getProduct); // Get a single product
