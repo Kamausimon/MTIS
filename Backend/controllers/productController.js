@@ -1,4 +1,5 @@
 const product = require("../models/productModel");
+const Audit = require("../models/auditModel");
 const AppError = require("../utils/appError");
 const dotenv = require("dotenv");
 
@@ -73,6 +74,27 @@ exports.createProduct = async (req, res, next) => {
       low_stock_threshold: req.body.low_stock_threshold,
       image_url: imageUrl,
     });
+
+    await Audit.create({
+      action: "CREATE",
+      entity: "PRODUCT",
+      entityId: newProduct._id,
+      perfomedBy: req.user.id,
+      changes: newProduct,
+      user_role: req.user.role,
+      businessCode: req.body.businessCode,
+      before: null,
+      after: newProduct,
+      changed_fields: null,
+      description: `Product ${newProduct.name} created`,
+    });
+
+    res.status(201).json({
+      status: "success",
+      data: {
+        newProduct,
+      },
+    });
   } catch (err) {
     res.status(400).json({
       status: "fail",
@@ -110,6 +132,20 @@ exports.updateProduct = async (req, res, next) => {
       runValidators: true,
     });
 
+    await Audit.create({
+      action: "UPDATE",
+      entity: "PRODUCT",
+      entityId: product._id,
+      perfomedBy: req.user.id,
+      changes: product,
+      user_role: req.user.role,
+      businessCode: req.body.businessCode,
+      before: null,
+      after: product,
+      changed_fields: null,
+      description: `Product ${product.name} updated`,
+    });
+
     if (!product) {
       return next(new AppError("Product not found", 404));
     }
@@ -131,6 +167,20 @@ exports.updateProduct = async (req, res, next) => {
 exports.deleteProduct = async (req, res, next) => {
   try {
     const product = await product.findByIdAndDelete(req.params.id);
+
+    await Audit.create({
+      action: "DELETE",
+      entity: "PRODUCT",
+      entityId: product._id,
+      perfomedBy: req.user.id,
+      changes: null,
+      user_role: req.user.role,
+      businessCode: req.body.businessCode,
+      before: product,
+      after: null,
+      changed_fields: null,
+      description: `Product ${product.name} deleted`,
+    });
 
     if (!product) {
       return next(new AppError("Product not found", 404));

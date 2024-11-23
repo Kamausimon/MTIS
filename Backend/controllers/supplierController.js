@@ -1,4 +1,5 @@
 const supplier = require("../models/supplierModel");
+const Audit = require("../models/auditModel");
 const AppError = require("../utils/AppError");
 const dotenv = require("dotenv");
 
@@ -110,6 +111,16 @@ exports.updateSupplier = async (req, res, next) => {
 exports.deleteSupplier = async (req, res, next) => {
   try {
     const supplier = await supplier.findByIdAndDelete(req.params.id);
+
+    await Audit.create({
+      action: "Delete",
+      entity: "Supplier",
+      entityId: user._id,
+      perfomedBy: req.user.name,
+      businessCode: req.user.businessCode,
+      changes: req.body,
+      user_role: req.user.role,
+    });
 
     if (!supplier) {
       return next(new AppError("Supplier not found", 404));

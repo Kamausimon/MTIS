@@ -7,6 +7,7 @@ const { promisify } = require("util");
 const sendEmail = require("../utils/email");
 const dotenv = require("dotenv");
 const Business = require("../models/businessModel");
+const Audit = require("../models/auditModel");
 
 dotenv.config({ path: "./../config/.env" });
 
@@ -97,6 +98,20 @@ exports.login = async (req, res, next) => {
       businessCode,
       status: "active",
     }).select("+password");
+
+    await Audit.create({
+      action: "LOGIN",
+      entity: "USER",
+      entityId: user._id,
+      perfomedBy: user._id,
+      changes: {
+        email: user.email,
+        businessCode: user.businessCode,
+      },
+      user_role: user.role,
+      businessCode: user.businessCode,
+      DESCRIPTION: "User logged in",
+    });
 
     if (user.status === "inactive") {
       return next(new AppError("Please create a new account", 400));

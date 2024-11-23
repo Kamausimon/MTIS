@@ -1,4 +1,5 @@
 const order = require("../models/orderModel");
+const Audit = require("../models/auditModel");
 const AppError = require("../utils/AppError");
 const dotenv = require("dotenv");
 const Counter = require("../models/counterModel");
@@ -113,6 +114,21 @@ exports.updateOrder = async (req, res, next) => {
 exports.deleteOrder = async (req, res, next) => {
   try {
     const order = await order.findByIdAndDelete(req.params.id);
+
+    await Audit.create({
+      action: "DELETE",
+      entity: "ORDER",
+      entityId: req.params.id,
+      perfomedBy: req.user.id,
+      changes: req.body,
+      user_role: req.user.role,
+      businessCode: req.user.businessCode,
+      before: order,
+      after: null,
+      changed_fields: null,
+      description: "Order deleted",
+    });
+
     if (!order) {
       return next(new AppError("No order found with that ID", 404));
     }

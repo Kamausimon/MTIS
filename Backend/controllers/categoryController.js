@@ -1,4 +1,5 @@
 const Category = require("../models/categoryModel");
+const Audit = require("../models/auditModel");
 const AppError = require("../utils/appError");
 const dotenv = require("dotenv");
 
@@ -91,6 +92,21 @@ exports.updateCategory = async (req, res, next) => {
 exports.deleteCategory = async (req, res, next) => {
   try {
     await Category.findByIdAndDelete(req.params.id);
+
+    await Audit.create({
+      action: "DELETE",
+      entity: "CATEGORY",
+      entityId: req.params.id,
+      perfomedBy: req.user.id,
+      changes: req.body,
+      user_role: req.user.role,
+      businessCode: req.user.businessCode,
+      before: null,
+      after: null,
+      changed_fields: null,
+      description: "Category deleted",
+    });
+
     if (!category) {
       return next(new AppError("No category found with that ID", 404));
     }
