@@ -192,7 +192,10 @@ const restrictTo = (...roles) => {
 };
 
 exports.forgotPassword = async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email });
+  const user = await User.findOne({
+    email: req.body.email,
+    businessCode: req.body.businessCode,
+  });
   if (!user) {
     return next(new AppError("There is no user with email address", 404));
   }
@@ -204,7 +207,9 @@ exports.forgotPassword = async (req, res, next) => {
 
   const resetUrl = `${req.protocol}://${req.get(
     "host"
-  )}/api/v1/users/resetPassword/${resetToken}`;
+  )}/api/v1/users/resetPassword/${resetToken}?businessCode=${
+    req.body.businessCode
+  }`;
 
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetUrl}.\nIf you didn't forget your password, please ignore this email!`;
   try {
@@ -229,20 +234,20 @@ exports.forgotPassword = async (req, res, next) => {
 exports.resetPassword = async (req, res, next) => {
   try {
     //check if token exists
-    if (!req.params.token) {
+    const token = req.params;
+    const { password, passwordConfirm, businessCode } = req.body;
+    if (!token) {
       return next(new AppError("Token does not exist", 400));
     }
 
     //hash the token
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(req.params.token)
-      .digest("hex");
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     //find the user with the token
     const user = await User.findOne({
       passwordResetToken: hashedToken,
       passwordResetExpires: { $gt: Date.now() },
+      businessCode,
     });
 
     //if no user exists
@@ -251,15 +256,15 @@ exports.resetPassword = async (req, res, next) => {
     }
 
     //check if password exists
-    if (!req.body.password || !req.body.passwordConfirm) {
+    if (!password || !passwordConfirm) {
       return next(
         new AppError("Please provide password and password confirmation", 400)
       );
     }
 
     //update user's password and clear reset token
-    user.password = req.body.password;
-    user.passwordConfirm = req.body.passwordConfirm;
+    user.password = password;
+    user.passwordConfirm = passwordConfirm;
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
 

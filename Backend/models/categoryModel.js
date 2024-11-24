@@ -18,4 +18,4 @@ const categorySchema = new mongoose.Schema(
   }
 );
 
-Module.exports = mongoose.model("Category", categorySchema); // Category is the name of the model, categorySchema is the schema
+module.exports = mongoose.model("Category", categorySchema); // Category is the name of the model, categorySchema is the schema

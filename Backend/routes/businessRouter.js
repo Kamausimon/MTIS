@@ -7,4 +7,4 @@ const router = express.Router({ mergeParams: true });
 //ROUTES
 router.route("/").get(businessController.registerBusiness); // Get all businesses
 
-Module.exports = router;
+module.exports = router;

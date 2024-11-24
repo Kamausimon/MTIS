@@ -41,4 +41,4 @@ router
     auditController.deleteAudit
   ); // Delete audit
 
-Module.exports = router;
+module.exports = router;
