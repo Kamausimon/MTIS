@@ -12,9 +12,9 @@ const options = {
   maxPoolSize: 10,
 };
 
-const DB = `mongodb+srv://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@cluster0.fby3h.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority&appName=Cluster0`;
+const DB = `mongodb+srv://${process.env.DATABASE_USERNAME}:${process.env.DATABASE_PASSWORD}@cluster0.fby3h.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
-const connectToDatabase = async (retries = 3) => {
+const connectToDatabase = async () => {
   try {
     console.log("attempting to connect to database");
     console.log(
@@ -26,11 +26,7 @@ const connectToDatabase = async (retries = 3) => {
   } catch (err) {
     console.log("Database connection failed");
     console.log("Error details:", err.message);
-    if (retries > 0) {
-      console.log(`Retrying... (${retries} attempts remaining)`);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      return connectToDatabase(retries - 1);
-    }
+
     process.exit(1);
   }
 };
