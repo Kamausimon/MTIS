@@ -35,13 +35,17 @@ const supplierRouter = require("./routes/supplierRouter");
 const categoryRouter = require("./routes/categoryRouter");
 const auditRouter = require("./routes/auditRouter");
 const businessRouter = require("./routes/businessRouter");
+const fs = require("fs");
+const path = require("path");
 
 //ROUTES MIDDLEWARE
 app.use(express.json());
 
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-}
+app.use(morgan("dev"));
+morgan.token("error", (req, res) => res.locals.errorMessage || "");
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :error")
+);
 
 //ROUTES
 app.use("/api/v1/users", userRouter);
