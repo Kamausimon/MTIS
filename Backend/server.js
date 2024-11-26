@@ -8,7 +8,7 @@ dotenv.config({ path: "./config.env" });
 const connect = async () => {
   try {
     await connectToDatabase();
-    console.log("Database connection successful");
+    console.log("Database connected successfully");
   } catch (err) {
     console.log("Database connection failed");
     console.log(err);
@@ -16,7 +16,7 @@ const connect = async () => {
   }
 };
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 // Server startup
 let server;
