@@ -8,7 +8,7 @@ dotenv.config({ path: "./config.env" });
 const connect = async () => {
   try {
     await connectToDatabase();
-    console.log("Database connected successfully");
+    console.log("Database connected");
   } catch (err) {
     console.log("Database connection failed");
     console.log(err);
