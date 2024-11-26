@@ -9,7 +9,7 @@ const dotenv = require("dotenv");
 const Business = require("../models/businessModel");
 const Audit = require("../models/auditModel");
 
-dotenv.config({ path: "./../config/.env" });
+dotenv.config({ path: "../config.env" });
 
 //create a jwt sign token function
 const signToken = (user) => {

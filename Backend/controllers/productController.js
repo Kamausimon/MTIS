@@ -3,7 +3,7 @@ const Audit = require("../models/auditModel");
 const AppError = require("../utils/appError");
 const dotenv = require("dotenv");
 
-dotenv.config({ path: "../config/.env" });
+dotenv.config({ path: "../config.env" });
 
 exports.getAllProducts = async (req, res, next) => {
   try {
