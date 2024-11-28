@@ -19,7 +19,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       ref: "Business",
-    },
+    }, //string based reference to the business
+    business: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Business",
+    }, //direct reference to the business
 
     role: {
       type: String,

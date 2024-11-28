@@ -8,50 +8,10 @@ const sendEmail = require("../utils/sendEmail");
 const dotenv = require("dotenv");
 const Business = require("../models/businessModel");
 const Audit = require("../models/auditModel");
+const { createSendToken, signToken } = require("../utils/jwt");
+const validator = require("validator");
 
 dotenv.config({ path: "../config.env" });
-
-//create a jwt sign token function
-const signToken = (user) => {
-  return jwt.sign(
-    { id: user._id, businessCode: user.businessCode },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    }
-  );
-};
-
-//create a send token function
-const createSendToken = (user, statusCode, res) => {
-  //create a jwt token
-  const token = signToken(user);
-
-  //create a cookie
-  const cookieOptions = {
-    expire: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true,
-  };
-  //set cookie options to secure if in production
-  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
-
-  //set the cookie in a cookie called jwt
-  res.cookie("jwt", token, cookieOptions);
-
-  //remove the password from the output
-  user.password = undefined;
-
-  //send the response
-  res.status(statusCode).json({
-    status: "success",
-    token,
-    data: {
-      user,
-    },
-  });
-};
 
 exports.signup = async (req, res, next) => {
   try {
@@ -70,8 +30,17 @@ exports.signup = async (req, res, next) => {
       passwordConfirm: req.body.passwordConfirm,
       role: req.body.role,
       businessName: req.body.businessName,
-      tenant_id: req.body.tenant_id,
+      businessCode: business.businessCode,
+      business: business._id,
     });
+
+    if (password !== passwordConfirm) {
+      return next(new AppError("Passwords do not match", 400));
+    }
+
+    if (!validator.isEmail(email)) {
+      return next(new AppError("Please provide a valid email", 400));
+    }
 
     //generate token
     createSendToken(newUser, 201, res);

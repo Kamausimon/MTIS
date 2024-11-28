@@ -5,6 +5,8 @@ const authController = require("../controllers/authController");
 const router = express.Router({ mergeParams: true });
 
 //ROUTES
-router.route("/").get(businessController.registerBusiness); // Get all businesses
+router.route("/registerBusiness").post(businessController.registerBusiness); // Get all businesses
+router.route("/confirmEmail/:token").patch(businessController.confirmBusiness); // confirm email
+router.route("/createAdmin").post(authController.signup); // create admin
 
 module.exports = router;
