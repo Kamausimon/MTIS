@@ -43,6 +43,7 @@ exports.registerBusiness = async (req, res, next) => {
     res.status(400).json({
       status: "fail",
       message: err.message,
+      stack: err.stack,
     });
   }
 };
@@ -69,6 +70,7 @@ exports.confirmBusiness = async (req, res, next) => {
     res.status(400).json({
       status: "fail",
       message: err.message,
+      stack: err.stack,
     });
   }
 };
@@ -101,6 +103,7 @@ exports.createAdmin = async (req, res, next) => {
     res.status(400).json({
       status: "fail",
       message: err.message,
+      stack: err.stack,
     });
   }
 };

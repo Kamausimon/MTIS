@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" });
 
-const DB = `mongodb+srv://kamausimon:${process.env.DATABASE_PASSWORD}@cluster0.fby3h.mongodb.net/${process.DATABASE_NAME}?retryWrites=true&w=majority&appName=Cluster0`;
+const DB = `mongodb+srv://kamausimon:${process.env.DATABASE_PASSWORD}@cluster0.fby3h.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 mongoose.set("debug", true);
 const connectToDatabase = async () => {
   try {
@@ -19,5 +19,9 @@ const connectToDatabase = async () => {
     process.exit(1);
   }
 };
+
+mongoose.connection.on("error", (err) => {
+  console.log("Database connection error:", err.message);
+});
 
 module.exports = connectToDatabase;
