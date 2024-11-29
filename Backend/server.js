@@ -1,55 +1,57 @@
-const app = require("./app");
+const app = require("./App");
 const dotenv = require("dotenv");
-const connectToDatabase = require("./db");
+const connectToDATABASE = require("./db");
 
+// Configure dotenv
 dotenv.config({ path: "./config.env" });
 
-// Database connection
+// Call the database connection
 const connect = async () => {
   try {
-    await connectToDatabase();
-    console.log("Database connected successfully");
-  } catch (err) {
-    console.log("Database connection failed");
-    console.log(err.stack);
-    process.exit(1); // Fix typo: Process -> process
+    await connectToDATABASE();
+    console.log("Connected to the database");
+  } catch (error) {
+    console.error("Error connecting to the database:", error);
+    process.exit(1); // Exit the application on connection error
   }
 };
 
-const port = process.env.PORT || 8000;
+// Get the port from environment variables
+const port = process.env.PORT || 3000;
 
-// Server startup
+// Start the server
 let server;
 const startServer = async () => {
-  try {
-    await connect();
-    server = app.listen(port, () => {
-      console.log(`Server running on port ${port}`);
-    });
-  } catch (err) {
-    console.error("Error starting server:", err);
-    console.log(err.stack);
-    process.exit(1);
-  }
+  await connect();
+  server = app.listen(port, () => {
+    console.log(`The server is listening on port: ${port}`);
+  });
 };
 
-// // Error handlers
-// process.on("uncaughtException", (err) => {
-//   console.error("UNCAUGHT EXCEPTION! Shutting down...");
-//   console.error(err.name, err.message);
-//   process.exit(1);
-// });
-
-// process.on("unhandledRejection", (err) => {
-//   console.error("UNHANDLED REJECTION! Shutting down...");
-//   console.error(err.name, err.message);
-//   if (server) {
-//     server.close(() => {
-//       process.exit(1);
-//     });
-//   } else {
-//     process.exit(1);
-//   }
-// });
-
 startServer();
+
+// Handle uncaught exceptions
+process.on("uncaughtException", (err) => {
+  console.error(new Date().toISOString(), err.name, err.message);
+  console.error("Uncaught exception...shutting down");
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  } else {
+    process.exit(1);
+  }
+});
+
+// Handle unhandled rejections
+process.on("unhandledRejection", (err) => {
+  console.error(new Date().toISOString(), err.name, err.message);
+  console.error("Unhandled rejection...shutting down");
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  } else {
+    process.exit(1);
+  }
+});
