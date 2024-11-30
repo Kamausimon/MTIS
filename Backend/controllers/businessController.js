@@ -79,13 +79,14 @@ exports.confirmBusiness = async (req, res, next) => {
 
     //decode the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log( ' the decoded token:', decoded);
 
     //find the business
     const business = await Business.findById(decoded.id);
     if (!business) {
       return next(new AppError("Business not found", 404));
     }
-    business.isconfirmed = true;
+    business.isConfirmed = true;
     await business.save();
     res.status(200).json({
       status: "success",

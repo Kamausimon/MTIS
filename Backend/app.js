@@ -27,6 +27,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(hpp()); // Prevent http param pollution
 
+app.use((req, res, next) => {
+  console.log(`Incoming request: ${req.method} ${req.originalUrl}`);
+  next();
+});
+
+
 //ROUTES
 const userRouter = require("./routes/userRouter");
 const productRouter = require("./routes/productRouter");
