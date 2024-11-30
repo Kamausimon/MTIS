@@ -108,7 +108,7 @@ exports.createAdmin = async (req, res, next) => {
     if (!business) {
       return next(new AppError("Business not found", 404));
     }
-    if (!business.isconfirmed) {
+    if (!business.isConfirmed) {
       return next(new AppError("Business not confirmed", 400));
     }
 
