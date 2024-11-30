@@ -17,7 +17,7 @@ const connect = async () => {
 };
 
 // Get the port from environment variables
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
 
 // Start the server
 let server;
@@ -26,9 +26,21 @@ const startServer = async () => {
   server = app.listen(port, () => {
     console.log(`The server is listening on port: ${port}`);
   });
+
+  server.on('error', (err) => {
+    if(err.code === 'EADDRINUSE') {
+      console.error(`Port ${port} is already in use. Finding another port...`);
+     const dynamicServer = app.listen(0, () => {
+      const  dynamicPort = dynamicServer.address().port;
+      console.log(`The server is listening on port: ${dynamicPort}`);
+     })
+    }else{
+      console.error("Error starting the server:", err);
+    }
+  })
 };
 
-startServer();
+
 
 // Handle uncaught exceptions
 process.on("uncaughtException", (err) => {
@@ -55,3 +67,5 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
   }
 });
+
+startServer();

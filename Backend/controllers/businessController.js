@@ -1,13 +1,38 @@
 const Business = require("../models/businessModel");
 const User = require("../models/userModel");
-const {
-  createSendToken,
-  signToken,
-  businessSignToken,
-  createConfirmationToken,
-} = require("../utils/jwt");
+const AppError = require("../utils/AppError");
 const validator = require("validator");
 const sendEmail = require("../utils/sendEmail");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: "../config.env" });
+
+const businessSignToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+};
+
+const createConfirmationToken = (id, statusCode, res) => {
+  const token = businessSignToken(id);
+  const cookieOptions = {
+    expire: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+
+  res.cookie("jwt", token, cookieOptions);
+
+  res.status(statusCode).json({
+    status: "success",
+    token,
+  });
+};
+
 
 exports.registerBusiness = async (req, res, next) => {
   try {
