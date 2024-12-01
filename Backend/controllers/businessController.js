@@ -14,6 +14,38 @@ const businessSignToken = (id) => {
   });
 };
 
+//create a send token function
+const createSendToken = (user, statusCode, res) => {
+  //create a jwt token
+  const token = signToken(user);
+
+  //create a cookie
+  const cookieOptions = {
+    expire: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+  //set cookie options to secure if in production
+  if (process.env.NODE_ENV === "production") cookieOptions.secure = true;
+
+  //set the cookie in a cookie called jwt
+  res.cookie("jwt", token, cookieOptions);
+
+  //remove the password from the output
+  user.password = undefined;
+
+  //send the response
+  res.status(statusCode).json({
+    status: "success",
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
+
 const createConfirmationToken = (id, statusCode, res) => {
   const token = businessSignToken(id);
   const cookieOptions = {
@@ -31,6 +63,28 @@ const createConfirmationToken = (id, statusCode, res) => {
     status: "success",
     token,
   });
+};
+
+exports.protectBusiness = async (req, res, next) => {
+   try {
+        const token = req.authorization.headers.split(" ")[1];
+        if(!token){
+          return next(new AppError("You are not logged in", 401));
+        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const business = await Business.findById(decoded.id);
+        if(!business || !business.isConfirmed){
+          return next(new AppError("Business does not exist or business is not confirmed", 404));
+        }
+        req.business = business;
+        next();
+   }catch(err){
+     res.status(400).json({
+       status: "fail",
+       message: err.message,
+       stack: err.stack,
+     });
+   }
 };
 
 
@@ -88,9 +142,15 @@ exports.confirmBusiness = async (req, res, next) => {
     }
     business.isConfirmed = true;
     await business.save();
+
+    //generate a login token
+    const loginToken = jwt.sign({ id: business._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    })
     res.status(200).json({
       status: "success",
       message: "Business confirmed",
+      token: loginToken,
     });
   } catch (err) {
     res.status(400).json({
@@ -103,14 +163,8 @@ exports.confirmBusiness = async (req, res, next) => {
 
 exports.createAdmin = async (req, res, next) => {
   try {
-    // check if the business is confirmed
-    const business = await Business.findById(req.body.businessId);
-    if (!business) {
-      return next(new AppError("Business not found", 404));
-    }
-    if (!business.isConfirmed) {
-      return next(new AppError("Business not confirmed", 400));
-    }
+    //find the business
+    const business = req.business;
 
     //create the admin user
     const adminUser = await User.create({
