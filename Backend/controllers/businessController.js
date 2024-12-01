@@ -65,27 +65,6 @@ const createConfirmationToken = (id, statusCode, res) => {
   });
 };
 
-exports.protectBusiness = async (req, res, next) => {
-   try {
-        const token = req.authorization.headers.split(" ")[1];
-        if(!token){
-          return next(new AppError("You are not logged in", 401));
-        }
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const business = await Business.findById(decoded.id);
-        if(!business || !business.isConfirmed){
-          return next(new AppError("Business does not exist or business is not confirmed", 404));
-        }
-        req.business = business;
-        next();
-   }catch(err){
-     res.status(400).json({
-       status: "fail",
-       message: err.message,
-       stack: err.stack,
-     });
-   }
-};
 
 
 exports.registerBusiness = async (req, res, next) => {
@@ -153,6 +132,37 @@ exports.confirmBusiness = async (req, res, next) => {
       token: loginToken,
     });
   } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+      stack: err.stack,
+    });
+  }
+};
+
+
+exports.protectBusiness = async (req, res, next) => {
+  try {
+     if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
+        console.log('the headers:', req.headers);
+        console.log('the token:', req.headers.authorization?.split(" ")[1]);
+     };
+     if(!req.headers.authorization || !req.headers.authorization.startsWith("Bearer")){
+          return next(new AppError("You are not logged in", 401));
+     }
+       const token = req.headers.authorization.split(" ")[1];
+       console.log('the token:', token);  
+       if(!token){
+         return next(new AppError("You are not logged in", 401));
+       }
+       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+       const business = await Business.findById(decoded.id);
+       if(!business || !business.isConfirmed){
+         return next(new AppError("Business does not exist or business is not confirmed", 404));
+       }
+       req.business = business;
+       next();
+  }catch(err){
     res.status(400).json({
       status: "fail",
       message: err.message,
