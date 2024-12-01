@@ -9,6 +9,7 @@ const dotenv = require("dotenv");
 const Business = require("../models/businessModel");
 const validator = require("validator");
 const {createAudit} = require("./auditController");
+const { stack } = require("../app");
 
 dotenv.config({ path: "../config.env" });
 
@@ -153,6 +154,7 @@ exports.login = async (req, res, next) => {
     res.status(400).json({
       status: "fail",
       message: err.message,
+      stack: err.stack,
     });
   }
 };

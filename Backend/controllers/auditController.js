@@ -27,7 +27,7 @@ exports.getAllAudits = async (req, res, next) => {
 
 exports.createAudit = async (action, entity, entityId, perfomedBy, changes, userRole, businessCode) => {
   try {
-    const audit = await Audit.create({
+   await Audit.create({
       action,
       entity,
       entityId,
@@ -37,16 +37,12 @@ exports.createAudit = async (action, entity, entityId, perfomedBy, changes, user
       businessCode,
     });
 
-    res.status(201).json({
-      status: "success",
-      data: {
-        audit,
-      },
-    });
+
   } catch (err) {
     res.status(400).json({
       status: "fail",
       message: err.message,
+      stack: err.stack,
     });
   }
 };
