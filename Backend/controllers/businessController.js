@@ -8,10 +8,17 @@ const dotenv = require("dotenv");
 
 dotenv.config({ path: "../config.env" });
 
-const businessSignToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
+
+
+//create a jwt sign token function
+const signToken = (user) => {
+  return jwt.sign(
+    { id: user._id, businessCode: user.businessCode },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    }
+  );
 };
 
 //create a send token function
@@ -42,6 +49,12 @@ const createSendToken = (user, statusCode, res) => {
     data: {
       user,
     },
+  });
+};
+
+const businessSignToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
@@ -106,70 +119,90 @@ exports.registerBusiness = async (req, res, next) => {
   }
 };
 
+
 exports.confirmBusiness = async (req, res, next) => {
   try {
-    const token = req.params.token;
+    const { token } = req.params;
+    
+    if (!token) {
+      return next(new AppError('No token provided', 400));
+    }
 
-    //decode the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log( ' the decoded token:', decoded);
 
-    //find the business
     const business = await Business.findById(decoded.id);
     if (!business) {
-      return next(new AppError("Business not found", 404));
+      return next(new AppError('Business not found or token invalid', 404));
     }
-    business.isConfirmed = true;
-    await business.save();
 
-    //generate a login token
-    const loginToken = jwt.sign({ id: business._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    })
+    if (business.isConfirmed) {
+      return next(new AppError('Email already confirmed', 400));
+    }
+
+    business.isConfirmed = true;
+    await business.save({ validateBeforeSave: false });
+
+    const loginToken = jwt.sign(
+      { id: business._id },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
+
     res.status(200).json({
-      status: "success",
-      message: "Business confirmed",
-      token: loginToken,
+      status: 'success',
+      message: 'Email confirmed successfully',
+      token: loginToken
     });
   } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      message: err.message,
-      stack: err.stack,
-    });
+    if (err.name === 'JsonWebTokenError') {
+      return next(new AppError('Invalid token', 400));
+    }
+      res.status(400).json({
+        status: 'fail',
+        message: err.message,
+        stack: err.stack
+      }
+      );
   }
 };
 
-
+// Add specific error types for JWT verification
 exports.protectBusiness = async (req, res, next) => {
   try {
-     if(req.headers.authorization && req.headers.authorization.startsWith("Bearer")){
-        console.log('the headers:', req.headers);
-        console.log('the token:', req.headers.authorization?.split(" ")[1]);
-     };
-     if(!req.headers.authorization || !req.headers.authorization.startsWith("Bearer")){
-          return next(new AppError("You are not logged in", 401));
-     }
-       const token = req.headers.authorization.split(" ")[1];
-       console.log('the token:', token);  
-       if(!token){
-         return next(new AppError("You are not logged in", 401));
-       }
-       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-       const business = await Business.findById(decoded.id);
-       if(!business || !business.isConfirmed){
-         return next(new AppError("Business does not exist or business is not confirmed", 404));
-       }
-       req.business = business;
-       next();
-  }catch(err){
+    if (!req.headers.authorization?.startsWith("Bearer")) {
+      return next(new AppError("Please login to access this route", 401));
+    }
+
+    const token = req.headers.authorization.split(" ")[1];
+    
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      if (err.name === 'JsonWebTokenError') {
+        return next(new AppError('Invalid token. Please log in again.', 401));
+      }
+      if (err.name === 'TokenExpiredError') {
+        return next(new AppError('Your token has expired. Please log in again.', 401));
+      }
+    }
+
+    const business = await Business.findById(decoded.id);
+    if (!business) {
+      return next(new AppError('Business no longer exists', 401));
+    }
+
+    req.business = business;
+    next();
+  } catch (err) {
     res.status(400).json({
-      status: "fail",
+      status: 'fail',
       message: err.message,
-      stack: err.stack,
+      stack: err.stack
     });
   }
 };
+
 
 exports.createAdmin = async (req, res, next) => {
   try {
@@ -185,6 +218,7 @@ exports.createAdmin = async (req, res, next) => {
       role: "admin",
       status: "active",
       business: business._id,
+      businessCode: business.businessCode,
     });
 
     //generate token

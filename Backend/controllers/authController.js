@@ -53,43 +53,58 @@ const createSendToken = (user, statusCode, res) => {
     },
   });
 };
-
 exports.signup = async (req, res, next) => {
   try {
-    const business = await Business.findOne({
-      businessName: req.body.businessName,
-    });
+    const {
+      name,
+      email,
+      password,
+      passwordConfirm,
+      role,
+      businessCode // Changed from businessName
+    } = req.body;
 
-    if (!business) {
-      return next(new AppError("Business does not exist", 404));
+    // Validate inputs first
+    if (!email || !password || !passwordConfirm || !businessCode) {
+      return next(new AppError('Please provide all required fields', 400));
     }
 
-    const newUser = await User.create({
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-      passwordConfirm: req.body.passwordConfirm,
-      role: req.body.role,
-      businessName: req.body.businessName,
-      businessCode: business.businessCode,
-      business: business._id,
-    });
-
     if (password !== passwordConfirm) {
-      return next(new AppError("Passwords do not match", 400));
+      return next(new AppError('Passwords do not match', 400));
     }
 
     if (!validator.isEmail(email)) {
-      return next(new AppError("Please provide a valid email", 400));
+      return next(new AppError('Please provide a valid email', 400));
     }
 
-    //generate token
-    createSendToken(newUser, 201, res);
-  } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      message: err.message,
+    // Find business by businessCode
+    const business = await Business.findOne({ businessCode });
+
+    if (!business) {
+      return next(new AppError('Business does not exist', 404));
+    }
+
+    if (!business.isConfirmed) {
+      return next(new AppError('Business email not confirmed yet', 400));
+    }
+
+    // Create new user
+    const newUser = await User.create({
+      name,
+      email,
+      password,
+      passwordConfirm,
+      role,
+      businessName: business.businessName,
+      businessCode,
+      business: business._id
     });
+
+    // Generate token and send response
+    createSendToken(newUser, 201, res);
+
+  } catch (err) {
+    next(new AppError(err.message, 400));
   }
 };
 
