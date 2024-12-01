@@ -33,12 +33,10 @@ const auditSchema = new mongoose.Schema(
       required: true,
       ref: "Business",
     }, //tenant of user who performed the action
-    before: { type: mongoose.Schema.Types.Mixed }, //previous state of entity
-    after: { type: mongoose.Schema.Types.Mixed }, //new state of entity
-    changed_fields: { type: String }, //fields that were changed
-    description: { type: String }, //description of the action performed
-  },
+    
+},
   { timestamps: true }
 );
 
 const Audit = mongoose.model("Audit", auditSchema);
+module.exports = Audit;

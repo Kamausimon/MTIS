@@ -7,8 +7,8 @@ const { promisify } = require("util");
 const sendEmail = require("../utils/sendEmail");
 const dotenv = require("dotenv");
 const Business = require("../models/businessModel");
-const Audit = require("../models/auditModel");
 const validator = require("validator");
+const {createAudit} = require("./auditController");
 
 dotenv.config({ path: "../config.env" });
 
@@ -124,19 +124,7 @@ exports.login = async (req, res, next) => {
       status: "active",
     }).select("+password");
 
-    await Audit.create({
-      action: "LOGIN",
-      entity: "USER",
-      entityId: user._id,
-      perfomedBy: user._id,
-      changes: {
-        email: user.email,
-        businessCode: user.businessCode,
-      },
-      user_role: user.role,
-      businessCode: user.businessCode,
-      DESCRIPTION: "User logged in",
-    });
+  
 
     if (user.status === "inactive") {
       return next(new AppError("Please create a new account", 400));
@@ -145,6 +133,19 @@ exports.login = async (req, res, next) => {
     if (!user || !(await user.correctPassword(password, user.password))) {
       return next(new AppError("Incorrect email or password", 401));
     }
+
+    //create audit log
+    await createAudit({
+      action: "LOGIN",
+      entity: "USER",
+      entityId: user._id,
+      perfomedBy: user._id,
+      changes: { email: user.email,
+        businessCode: user.businessCode
+      },
+      userRole: user.role,
+      businessCode: user.businessCode,
+    })
 
     //if everything is ok, send token to client
     createSendToken(user, 200, res);
