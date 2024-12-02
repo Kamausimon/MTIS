@@ -9,14 +9,12 @@ router
   .route("/")
   .get(
     authController.protectRoute,
-    authController.restrictToManager,
     auditController.getAllAudits
   ); // Get all audits
 router
   .route("/")
   .post(
     authController.protectRoute,
-    authController.restrictToAdmin,
     auditController.createAudit
   ); // Create a new audit
 router

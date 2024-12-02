@@ -1,7 +1,9 @@
 const product = require("../models/productModel");
 const Audit = require("../models/auditModel");
-const AppError = require("../utils/appError");
+const AppError = require("../utils/AppError");
 const dotenv = require("dotenv");
+const {createAudit} = require("./auditController");
+const { stack } = require("../app");
 
 dotenv.config({ path: "../config.env" });
 
@@ -15,7 +17,7 @@ exports.getAllProducts = async (req, res, next) => {
 
     const lowStockProducts = products.filter((product) => product.isLowStock());
 
-    res.status(200).sjon({
+    res.status(200).json({
       status: "success",
       result: products.length,
       lowStockProducts: lowStockProducts.length,
@@ -27,9 +29,11 @@ exports.getAllProducts = async (req, res, next) => {
     res.status(400).json({
       status: "fail",
       message: err.message,
+      stack: err.stack,
     });
   }
 };
+
 
 exports.getLowStockProducts = async (req, res, next) => {
   try {
@@ -75,7 +79,7 @@ exports.createProduct = async (req, res, next) => {
       image_url: imageUrl,
     });
 
-    await Audit.create({
+    await createAudit({
       action: "CREATE",
       entity: "PRODUCT",
       entityId: newProduct._id,
@@ -83,10 +87,6 @@ exports.createProduct = async (req, res, next) => {
       changes: newProduct,
       user_role: req.user.role,
       businessCode: req.body.businessCode,
-      before: null,
-      after: newProduct,
-      changed_fields: null,
-      description: `Product ${newProduct.name} created`,
     });
 
     res.status(201).json({
@@ -140,10 +140,7 @@ exports.updateProduct = async (req, res, next) => {
       changes: product,
       user_role: req.user.role,
       businessCode: req.body.businessCode,
-      before: null,
-      after: product,
-      changed_fields: null,
-      description: `Product ${product.name} updated`,
+     
     });
 
     if (!product) {
@@ -176,10 +173,6 @@ exports.deleteProduct = async (req, res, next) => {
       changes: null,
       user_role: req.user.role,
       businessCode: req.body.businessCode,
-      before: product,
-      after: null,
-      changed_fields: null,
-      description: `Product ${product.name} deleted`,
     });
 
     if (!product) {

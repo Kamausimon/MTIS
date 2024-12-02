@@ -37,7 +37,6 @@ exports.createAudit = async (action, entity, entityId, perfomedBy, changes, user
       businessCode,
     });
 
-
   } catch (err) {
     res.status(400).json({
       status: "fail",

@@ -1,6 +1,6 @@
 const Category = require("../models/categoryModel");
 const Audit = require("../models/auditModel");
-const AppError = require("../utils/appError");
+const AppError = require("../utils/AppError");
 const dotenv = require("dotenv");
 
 exports.getAllCategories = async (req, res, next) => {

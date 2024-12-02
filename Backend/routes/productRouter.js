@@ -1,13 +1,13 @@
 const express = require("express");
 const productController = require("../controllers/productController");
 const authController = require("../controllers/authController");
-const upload = require("../config/multer");
+const {upload} = require("../config/multer");
 
 const router = express.Router({ mergeParams: true });
 
 //ROUTES
 router
-  .route("/")
+  .route("/allProducts")
   .get(authController.protectRoute, productController.getAllProducts); // Get all products
 router
   .route("/")

@@ -3,6 +3,8 @@ const Audit = require("../models/auditModel");
 const AppError = require("../utils/AppError");
 const dotenv = require("dotenv");
 
+dotenv.config({ path: "../config.env" });
+
 exports.getAllSuppliers = async (req, res, next) => {
   try {
     const suppliers = await supplier.find();
