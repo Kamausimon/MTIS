@@ -6,28 +6,27 @@ const {upload} = require("../config/multer");
 const router = express.Router({ mergeParams: true });
 
 //ROUTES
-router
-  .route("/allProducts")
-  .get(authController.protectRoute, productController.getAllProducts); // Get all products
-router
-  .route("/")
-  .post(
+router.route("/allProducts").get(
+  authController.protectRoute, 
+  productController.getAllProducts); // Get all products
+
+router.route("/").post(
     authController.protectRoute,
     upload.single("image"),
     productController.createProduct
   ); // Create a new product
-router
-  .route("/:id")
-  .get(authController.protectRoute, productController.getProduct); // Get a single product
-router
-  .route("/:id")
-  .patch(
+
+router.route("/:id").get(
+    authController.protectRoute, 
+    productController.getProduct); // Get a single product
+
+router.route("/:id").patch(
     authController.protectRoute,
     authController.restrictToAdmin,
     productController.updateProduct
   ); // Update product
-router
-  .route("/:id")
+
+router.route("/:id")
   .delete(
     authController.protectRoute,
     authController.restrictToAdmin,

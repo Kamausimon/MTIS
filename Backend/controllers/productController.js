@@ -79,15 +79,7 @@ exports.createProduct = async (req, res, next) => {
       image_url: imageUrl,
     });
 
-    await createAudit({
-      action: "CREATE",
-      entity: "PRODUCT",
-      entityId: newProduct._id,
-      perfomedBy: req.user.id,
-      changes: newProduct,
-      user_role: req.user.role,
-      businessCode: req.body.businessCode,
-    });
+
 
     res.status(201).json({
       status: "success",
@@ -132,16 +124,6 @@ exports.updateProduct = async (req, res, next) => {
       runValidators: true,
     });
 
-    await Audit.create({
-      action: "UPDATE",
-      entity: "PRODUCT",
-      entityId: product._id,
-      perfomedBy: req.user.id,
-      changes: product,
-      user_role: req.user.role,
-      businessCode: req.body.businessCode,
-     
-    });
 
     if (!product) {
       return next(new AppError("Product not found", 404));
@@ -165,15 +147,6 @@ exports.deleteProduct = async (req, res, next) => {
   try {
     const product = await product.findByIdAndDelete(req.params.id);
 
-    await Audit.create({
-      action: "DELETE",
-      entity: "PRODUCT",
-      entityId: product._id,
-      perfomedBy: req.user.id,
-      changes: null,
-      user_role: req.user.role,
-      businessCode: req.body.businessCode,
-    });
 
     if (!product) {
       return next(new AppError("Product not found", 404));

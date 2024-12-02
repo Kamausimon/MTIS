@@ -53,6 +53,14 @@ app.use(
   morgan(":method :url :status :res[content-length] - :response-time ms :error")
 );
 
+const EventEmitter = require("events");
+EventEmitter.defaultMaxListeners = 15; // Increase the default limit of 10 listeners
+
+const listener = () => console.log('Event triggered');
+emitter.on('event', listener);
+emitter.off('event', listener); // Removes the listener
+
+
 //ROUTES
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRouter);

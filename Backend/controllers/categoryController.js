@@ -93,21 +93,7 @@ exports.deleteCategory = async (req, res, next) => {
   try {
     await Category.findByIdAndDelete(req.params.id);
 
-    await Audit.create({
-      action: "DELETE",
-      entity: "CATEGORY",
-      entityId: req.params.id,
-      perfomedBy: req.user.id,
-      changes: req.body,
-      user_role: req.user.role,
-      businessCode: req.user.businessCode,
-      before: null,
-      after: null,
-      changed_fields: null,
-      description: "Category deleted",
-    });
-
-    if (!category) {
+    if (!Category) {
       return next(new AppError("No category found with that ID", 404));
     }
     res.status(204).json({
