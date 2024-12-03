@@ -1,8 +1,8 @@
 const product = require("../models/productModel");
-const Audit = require("../models/auditModel");
+
 const AppError = require("../utils/AppError");
 const dotenv = require("dotenv");
-const {createAudit} = require("./auditController");
+
 const { stack } = require("../app");
 
 dotenv.config({ path: "../config.env" });
