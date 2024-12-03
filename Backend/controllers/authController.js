@@ -166,7 +166,7 @@ exports.protectRoute = async (req, res, next) => {
     //verify token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
     //check if user still exists
-    const currentUser = await User.findOne({
+    const currentUser = await User.findById({
       _id: decoded.id,
       businessCode: decoded.businessCode,
     });
@@ -193,11 +193,12 @@ exports.protectRoute = async (req, res, next) => {
     res.status(400).json({
       status: "fail",
       message: err.message,
+      stack: err.stack,
     });
   }
 };
 
-const restrictTo = (...roles) => {
+exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return next(

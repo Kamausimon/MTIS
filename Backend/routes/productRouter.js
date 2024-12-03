@@ -3,7 +3,8 @@ const productController = require("../controllers/productController");
 const authController = require("../controllers/authController");
 const {upload} = require("../config/multer");
 
-const router = express.Router({ mergeParams: true });
+
+const router = express.Router();
 
 //ROUTES
 router.route("/allProducts").get(
@@ -33,8 +34,8 @@ router.route("/:id")
     productController.deleteProduct
   ); // Delete product
 
-router.get(
-  "/low-stock",
+router.route(
+  "/low-stock" ).get(
   authController.protectRoute,
   productController.getLowStockProducts
 ); // Get low stock products
