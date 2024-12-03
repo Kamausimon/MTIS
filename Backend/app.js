@@ -58,11 +58,24 @@ const businessRouter = require("./routes/businessRouter");
 
 
 const EventEmitter = require("events");
-EventEmitter.defaultMaxListeners = 15; // Increase the default limit of 10 listeners
 
-const listener = () => console.log('Event triggered');
-emitter.on('event', listener);
-emitter.off('event', listener); // Removes the listener
+// Create an instance of EventEmitter
+const myEmitter = new EventEmitter();
+
+// Increase the default limit of listeners
+myEmitter.setMaxListeners(20);
+
+const listener = () => console.log("Event triggered");
+
+// Add a listener to the event
+myEmitter.on("event", listener);
+
+// Emit the event
+myEmitter.emit("event"); // This will log: "Event triggered"
+
+// Remove the listener
+myEmitter.off("event", listener);
+
 
 
 //ROUTES

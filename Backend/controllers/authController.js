@@ -9,7 +9,7 @@ const dotenv = require("dotenv");
 const Business = require("../models/businessModel");
 const validator = require("validator");
 
-const { stack } = require("../app");
+
 
 dotenv.config({ path: "../config.env" });
 

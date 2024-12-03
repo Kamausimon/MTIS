@@ -1,10 +1,11 @@
 const express = require("express");
 const productController = require("../controllers/productController");
 const authController = require("../controllers/authController");
-const {upload} = require("../config/multer");
+const upload = require("../config/multer");
 
 
 const router = express.Router();
+
 
 //ROUTES
 router.route("/allProducts").get(
@@ -14,6 +15,7 @@ router.route("/allProducts").get(
 router.route("/").post(
     authController.protectRoute,
     upload.single("image"),
+
     productController.createProduct
   ); // Create a new product
 

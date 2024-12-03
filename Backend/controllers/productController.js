@@ -3,7 +3,7 @@ const product = require("../models/productModel");
 const AppError = require("../utils/AppError");
 const dotenv = require("dotenv");
 
-const { stack } = require("../app");
+
 
 dotenv.config({ path: "../config.env" });
 
