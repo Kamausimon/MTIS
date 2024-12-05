@@ -270,6 +270,7 @@ exports.resetPassword = async (req, res, next) => {
     //hash the token
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
    console.log("Hashed token: ", hashedToken);
+   console.log("passwordResetToken;", User.passwordResetToken);
     //find the user with the token
     const user = await User.findOne({
       passwordResetToken: hashedToken,
