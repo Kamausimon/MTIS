@@ -219,8 +219,9 @@ exports.forgotPassword = async (req, res, next) => {
   }
 
   //regenerate the random reset token
-  const resetToken = user.createResetToken();
+  const resetToken =await user.createResetToken();
 
+   console.log("Reset token: ", resetToken);
   await user.save({ validateBeforeSave: false });
 
   const resetUrl = `${req.protocol}://${req.get(
@@ -236,10 +237,18 @@ exports.forgotPassword = async (req, res, next) => {
       subject: "Your password reset token (valid for 10 minutes)",
       message,
     });
+
+    res.status(200).json({
+      status: "success",
+      message: "Token sent to email!",
+      resetToken,
+      resetUrl,
+    }); 
   } catch {
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
+    console.error("Error sending email: ", error);
     return next(
       new AppError(
         "There was an error sending the email. Try again later!",
@@ -252,7 +261,7 @@ exports.forgotPassword = async (req, res, next) => {
 exports.resetPassword = async (req, res, next) => {
   try {
     //check if token exists
-    const token = req.params;
+    const {token} = req.params;
     const { password, passwordConfirm, businessCode } = req.body;
     if (!token) {
       return next(new AppError("Token does not exist", 400));
@@ -260,7 +269,7 @@ exports.resetPassword = async (req, res, next) => {
 
     //hash the token
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-
+   console.log("Hashed token: ", hashedToken);
     //find the user with the token
     const user = await User.findOne({
       passwordResetToken: hashedToken,
@@ -297,6 +306,7 @@ exports.resetPassword = async (req, res, next) => {
   } catch (error) {
     console.error("Error resetting password: ", error);
     next(new AppError("Error resetting password", 500));
+
   }
 };
 

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const crypto = require("crypto");
+const crypto = require("node:crypto");
 
 const userSchema = new mongoose.Schema(
   {
@@ -95,7 +95,10 @@ userSchema.methods.createResetToken = async function () {
       .update(resetToken)
       .digest("hex");
     this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+    console.log("Reset token: ", resetToken);
+    await this.save({ validateBeforeSave: false });
     return resetToken;
+  
   } catch (error) {
     console.error("Error creating reset token", error);
     throw new Error("Error creating reset token");
