@@ -12,7 +12,7 @@ router.route("/allProducts").get(
   authController.protectRoute, 
   productController.getAllProducts); // Get all products
 
-router.route("/").post(
+router.route("/create").post(
     authController.protectRoute,
     upload.single("image"),
 
