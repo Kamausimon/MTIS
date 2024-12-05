@@ -34,6 +34,9 @@ const userSchema = new mongoose.Schema(
     },
 
     status: { type: String, enum: ["active", "inactive"], default: "active" },
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
   },
   {
     timestamps: true,
@@ -94,8 +97,11 @@ userSchema.methods.createResetToken = async function () {
       .createHash("sha256")
       .update(resetToken)
       .digest("hex");
+
+      console.log ({resetToken}, this.passwordResetToken);
+
     this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-    console.log("Reset token: ", resetToken);
+
     await this.save({ validateBeforeSave: false });
     return resetToken;
   

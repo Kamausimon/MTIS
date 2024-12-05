@@ -219,6 +219,7 @@ exports.createAdmin = async (req, res, next) => {
       status: "active",
       business: business._id,
       businessCode: business.businessCode,
+      
     });
 
     //generate token

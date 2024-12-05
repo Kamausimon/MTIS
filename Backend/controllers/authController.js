@@ -221,7 +221,7 @@ exports.forgotPassword = async (req, res, next) => {
   //regenerate the random reset token
   const resetToken =await user.createResetToken();
 
-   console.log("Reset token: ", resetToken);
+
   await user.save({ validateBeforeSave: false });
 
   const resetUrl = `${req.protocol}://${req.get(
@@ -260,56 +260,46 @@ exports.forgotPassword = async (req, res, next) => {
 
 exports.resetPassword = async (req, res, next) => {
   try {
-    //check if token exists
-    const {token} = req.params;
-    const { password, passwordConfirm, businessCode } = req.body;
-    if (!token) {
-      return next(new AppError("Token does not exist", 400));
-    }
+    // 1. Extract the token from params
+    const { token } = req.params;
 
-    //hash the token
+    // 2. Hash the token
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-   console.log("Hashed token: ", hashedToken);
-   console.log("passwordResetToken;", User.passwordResetToken);
-    //find the user with the token
+    console.log('Hashed token:', hashedToken);
+
+    // 3. Find the user with the token, valid expiry, and matching business code
     const user = await User.findOne({
       passwordResetToken: hashedToken,
       passwordResetExpires: { $gt: Date.now() },
-      businessCode,
+      businessCode: req.body.businessCode,
     });
 
-    //if no user exists
+    // 4. If user not found, throw an error
     if (!user) {
+      console.log('User not found with given token and business code.');
       return next(new AppError("Token is invalid or has expired", 400));
     }
 
-    //check if password exists
-    if (!password || !passwordConfirm) {
-      return next(
-        new AppError("Please provide password and password confirmation", 400)
-      );
-    }
-
-    //update user's password and clear reset token
-    user.password = password;
-    user.passwordConfirm = passwordConfirm;
+    // 5. Update user's password
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
 
-    //save the user
+    // 6. Save the user
     await user.save();
 
-    //respond with success message
+    // 7. Respond with success message
     res.status(200).json({
       status: "success",
       message: "Password reset successful",
     });
   } catch (error) {
-    console.error("Error resetting password: ", error);
+    console.error("Error resetting password:", error);
     next(new AppError("Error resetting password", 500));
-
   }
 };
+
 
 exports.updatePassword = async (req, res, next) => {
   try {
