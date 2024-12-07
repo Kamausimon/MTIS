@@ -188,6 +188,7 @@ const connectedData = parentCategories.map((parentCategory) => {
 });
 
 const seedCategories = async () => {
+  
   try {
     await Category.deleteMany();
     await Category.insertMany(connectedData);
