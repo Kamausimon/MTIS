@@ -79,6 +79,7 @@ exports.createCategory = async (req, res, next) => {
 exports.getCategory = async (req, res, next) => {
   try {
     const category = await Category.findById(req.params.id);
+    console.log(category);
     if (!category) {
       return next(new AppError("No category found with that ID", 404));
     }

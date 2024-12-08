@@ -68,7 +68,13 @@ exports.createProduct = async (req, res, next) => {
         req.file.location || `/public/uploads/products/${req.file.filename}`;
     }
 
-    const existingCategory  = await Category.findById(req.body.categoryId);
+    const existingCategory  = await Category.findOne({
+      _id: req.body.categoryId,
+      $or: [{ isGlobal: true }, { businessCode: req.body.businessCode }],
+    });
+
+    const testCategory = await Category.findOne({_id: "6754df5fe4be8157de7668bb"});
+    console.log(testCategory);
     if(!existingCategory){
       return next(new AppError("Category not found", 404))};
 
