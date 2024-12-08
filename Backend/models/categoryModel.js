@@ -5,12 +5,16 @@ const categorySchema = new mongoose.Schema(
     name: { type: String, required: true },
     description: { type: String, required: true },
     parent_id: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
-    children: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
+    children: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
     level: { type: Number, default: 0 },
     businessCode: {
       type: String,
-      required: true,
-      ref: "Business",
+       default:"null",
+   
+    },
+    isGlobal : {
+      type: Boolean,
+      default: false
     },
   },
   {
