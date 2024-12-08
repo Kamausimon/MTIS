@@ -1,7 +1,8 @@
 const product = require("../models/productModel");
-
+const { v4: uuidv4 } = require("uuid");
 const AppError = require("../utils/AppError");
 const dotenv = require("dotenv");
+const Category = require("../models/categoryModel");
 
 
 
@@ -66,6 +67,10 @@ exports.createProduct = async (req, res, next) => {
       imageUrl =
         req.file.location || `/public/uploads/products/${req.file.filename}`;
     }
+
+    const existingCategory  = await Category.findById(req.body.categoryId);
+    if(!existingCategory){
+      return next(new AppError("Category not found", 404))};
 
     const newProduct = await product.create({
       name: req.body.name,

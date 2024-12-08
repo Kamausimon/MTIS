@@ -6,7 +6,7 @@ const productSchema = new mongoose.Schema(
     sku: { type: String, required: true, unique: true },
     description: { type: String },
 
-    category_id: {
+    category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: [true, "A product must belong to a category"],
