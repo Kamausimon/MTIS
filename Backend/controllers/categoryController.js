@@ -154,21 +154,43 @@ exports.updateCategory = async (req, res, next) => {
     });
   }
 };
-exports.deleteCategory = async (req, res, next) => {
-  try {
-    await Category.findByIdAndDelete(req.params.id);
 
-    if (!Category) {
-      return next(new AppError("No category found with that ID", 404));
+
+exports.deleteCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the category by ID
+    const category = await Category.findById(id);
+
+    if (!category) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'Category not found',
+      });
     }
+
+    // Prevent deletion of global categories
+    if (category.isGlobal) {
+      return res.status(403).json({
+        status: 'fail',
+        message: 'Global categories cannot be deleted.',
+      });
+    }
+
+    // Proceed with deletion
+    await Category.findByIdAndDelete(id);
+
     res.status(204).json({
-      status: "success",
-      data: null,
+      status: 'success',
+      message: 'Category deleted successfully',
     });
   } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      message: err,
+    res.status(500).json({
+      status: 'fail',
+      message: 'An error occurred while deleting the category.',
+      stack: err.stack,
     });
   }
 };
+
