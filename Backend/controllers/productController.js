@@ -60,6 +60,12 @@ exports.getLowStockProducts = async (req, res, next) => {
 
 exports.createProduct = async (req, res, next) => {
   try {
+    console.log('request body', req.body);
+
+    if (!req.body.categoryId) {
+      return next(new AppError("Category is required", 400));
+    }
+
     const sku = uuidv4();
     let imageUrl = "";
 
@@ -68,13 +74,18 @@ exports.createProduct = async (req, res, next) => {
         req.file.location || `/public/uploads/products/${req.file.filename}`;
     }
 
+    console.log('looking for category with ', {
+      _id: req.body.categoryId,
+      $or: [{ isGlobal: true }, { businessCode: req.body.businessCode }],
+    })
+
     const existingCategory  = await Category.findOne({
       _id: req.body.categoryId,
       $or: [{ isGlobal: true }, { businessCode: req.body.businessCode }],
     });
 
-    const testCategory = await Category.findOne({_id: "6754df5fe4be8157de7668bb"});
-    console.log(testCategory);
+    console.log('found category', existingCategory);
+
     if(!existingCategory){
       return next(new AppError("Category not found", 404))};
 
@@ -90,12 +101,12 @@ exports.createProduct = async (req, res, next) => {
       image_url: imageUrl,
     });
 
-
+ 
 
     res.status(201).json({
       status: "success",
       data: {
-        newProduct,
+        product: newProduct,
       },
     });
   } catch (err) {
@@ -108,42 +119,43 @@ exports.createProduct = async (req, res, next) => {
 
 exports.getProduct = async (req, res, next) => {
   try {
-    const product = await product.findById(req.params.id);
+    const singleProduct = await product.findById(req.params.id);
 
-    if (!product) {
+    if (!singleProduct) {
       return next(new AppError("Product not found", 404));
     }
 
     res.status(200).json({
       status: "success",
       data: {
-        product,
+        singleProduct,
       },
     });
   } catch (err) {
     res.status(400).json({
       status: "fail",
       message: err.message,
+      stack: err.stack,
     });
   }
 };
 
 exports.updateProduct = async (req, res, next) => {
   try {
-    const product = await product.findByIdAndUpdate(req.params.id, req.body, {
+    const updatedProduct = await product.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
 
 
-    if (!product) {
+    if (!updatedProduct) {
       return next(new AppError("Product not found", 404));
     }
 
     res.status(200).json({
       status: "success",
       data: {
-        product,
+        updatedProduct,
       },
     });
   } catch (err) {
@@ -156,10 +168,10 @@ exports.updateProduct = async (req, res, next) => {
 
 exports.deleteProduct = async (req, res, next) => {
   try {
-    const product = await product.findByIdAndDelete(req.params.id);
+    const deleteProduct = await product.findByIdAndDelete(req.params.id);
 
 
-    if (!product) {
+    if (!deleteProduct) {
       return next(new AppError("Product not found", 404));
     }
 
