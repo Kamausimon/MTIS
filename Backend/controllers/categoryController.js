@@ -1,7 +1,8 @@
 const Category = require("../models/categoryModel");
-
+const mongoose = require("mongoose");
 const AppError = require("../utils/AppError");
 const dotenv = require("dotenv");
+
 
 dotenv.config({ path: "../config.env" });
 
@@ -15,13 +16,40 @@ exports.getAllCategories = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      data: categories,
+      data:categories,
+  
     });
   } catch (error) {
     console.error("Error fetching categories:", error);
     next(new AppError("Error fetching categories", 500));
   }
 };
+
+exports.bizCategories = async (req, res, next) => {
+  try{
+        
+    const businessCode = req.user.businessCode;
+
+    const categories = await Category.find({
+   $or:[{isGlobal:false},{businessCode}]
+    });
+
+    res.status(200).json({
+      status: "success",
+      data: categories,
+    });
+
+
+  }
+catch(err) {
+    res.status(400).json({
+      status: "fail",
+      message: err,
+      stack: err.stack,
+  })
+}}
+
+
 
 exports.createCategory = async (req, res, next) => {
   try {
@@ -32,6 +60,14 @@ exports.createCategory = async (req, res, next) => {
       return res.status(403).json({
         status: "fail",
         message: "You are not authorized to create global categories.",
+      });
+    }
+
+    // Validate `parent_id` if it exists
+    if (parent_id && !mongoose.Types.ObjectId.isValid(parent_id)) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid parent_id. Must be a valid ObjectId or null.",
       });
     }
 
@@ -55,7 +91,7 @@ exports.createCategory = async (req, res, next) => {
     const newCategory = await Category.create({
       name,
       description,
-      parent_id,
+      parent_id: parent_id || null, // Use null if no parent is provided
       children,
       level,
       businessCode,
@@ -67,14 +103,14 @@ exports.createCategory = async (req, res, next) => {
       data: newCategory,
     });
   } catch (err) {
-    console.error("Error creating category:", err.message);
-
     res.status(500).json({
       status: "fail",
       message: "An error occurred while creating the category.",
+      stack: err.stack,
     });
   }
 };
+
 
 exports.getCategory = async (req, res, next) => {
   try {

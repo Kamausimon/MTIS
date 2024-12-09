@@ -6,10 +6,14 @@ const router = express.Router({ mergeParams: true });
 
 //ROUTES
 router
-  .route("/")
+  .route("/allCategories")
   .get(authController.protectRoute, categoryController.getAllCategories); // Get all categories
+
+  router
+  .route("/bizCategories").get(authController.protectRoute, categoryController.bizCategories); // Get all business-specific categories
+
 router
-  .route("/")
+  .route("/createCategory")
   .post(authController.protectRoute, categoryController.createCategory); // Create a new category
 router
   .route("/:id")
@@ -18,7 +22,7 @@ router
   .route("/:id")
   .patch(
     authController.protectRoute,
-    authController.restrictToManager,
+    authController.restrictToAdmin,
     categoryController.updateCategory
   ); // Update category
 router
