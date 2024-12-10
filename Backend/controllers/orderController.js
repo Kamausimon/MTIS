@@ -3,6 +3,7 @@ const Product = require("../models/productModel");
 const AppError = require("../utils/AppError");
 const dotenv = require("dotenv");
 const Counter = require("../models/counterModel");
+const {v4: uuidv4} = require("uuid");
 
 //create a new order
 exports.getAllOrders = async (req, res, next) => {
@@ -39,7 +40,7 @@ const getNextOrderNumber = async (businessCode) => {
 
 exports.createOrder = async (req, res, next) => {
   try {
-    const orderNumber = await getNextOrderNumber(req.body.businessCode);
+    const orderNumber = uuidv4();
     const items = req.body.items.map((item) => ({
       product_id: item.product_id,
       quantity: item.quantity,
