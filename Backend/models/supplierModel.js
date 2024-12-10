@@ -6,12 +6,19 @@ const supplierSchema = new mongoose.Schema(
     contact_name: { type: String },
 
     phone: { type: String },
-    email: { type: String },
+    email: { type: String , required: true},
     address: { type: String },
     city: { type: String },
     website: { type: String },
 
-    products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+    products: [
+      {
+        Product_id: {
+          type: mongoose.Schema.ObjectId,
+          ref: "Product",
+          required: true,
+        }}
+    ],
     businessCode: {
       type: String,
       required: true,

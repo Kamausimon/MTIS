@@ -6,10 +6,10 @@ const router = express.Router({ mergeParams: true });
 
 //ROUTES
 router
-  .route("/")
+  .route("/getAllSuppliers")
   .get(authController.protectRoute, supplierController.getAllSuppliers); // Get all suppliers
 router
-  .route("/")
+  .route("/createSupplier")
   .post(
     authController.protectRoute,
     authController.restrictToAdmin,

@@ -63,16 +63,16 @@ exports.createSupplier = async (req, res, next) => {
 };
 exports.getSupplier = async (req, res, next) => {
   try {
-    const supplier = await supplier.findById(req.params.id);
+    const oneSupplier = await supplier.findById(req.params.id);
 
-    if (!supplier) {
+    if (!oneSupplier) {
       return next(new AppError("Supplier not found", 404));
     }
 
     res.status(200).json({
       status: "success",
       data: {
-        supplier,
+        oneSupplier,
       },
     });
   } catch (err) {
@@ -112,10 +112,10 @@ exports.updateSupplier = async (req, res, next) => {
 };
 exports.deleteSupplier = async (req, res, next) => {
   try {
-    const supplier = await supplier.findByIdAndDelete(req.params.id);
+    const deletedsupplier = await supplier.findByIdAndDelete(req.params.id);
 
 
-    if (!supplier) {
+    if (!deletedsupplier) {
       return next(new AppError("Supplier not found", 404));
     }
     res.status(201).json({
