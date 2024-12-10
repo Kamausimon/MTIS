@@ -47,13 +47,17 @@ const getNextOrderNumber = async (businessCode) => {
   return counter.sequence_value;
 };
 
-const generateInvoicePDF = (invoice) => {
+
+
+const generateInvoicePDF = async (invoice) => {
   const doc = new PDFDocument();
   const chunks = [];
 
-  // Buffer the PDF data
   doc.on('data', (chunk) => chunks.push(chunk));
-  doc.on('end', () => console.log('PDF created'));
+  doc.on('end', () => console.log('PDF generated successfully'));
+  doc.on('error', (err) => {
+    throw new Error(`Error generating PDF: ${err.message}`);
+  });
 
   // Add invoice details
   doc.fontSize(20).text('Invoice', { align: 'center' });
@@ -61,24 +65,31 @@ const generateInvoicePDF = (invoice) => {
   doc.fontSize(14).text(`Invoice Number: ${invoice.invoice_number}`);
   doc.text(`Customer Name: ${invoice.customer_name}`);
   doc.text(`Customer Email: ${invoice.customer_email}`);
-  doc.text(`Order Date: ${invoice.order_date}`);
+  doc.text(`Order Date: ${invoice.createdAt}`);
   doc.moveDown();
 
   doc.text('Items:');
-  invoice.items.forEach((item, index) => {
-    doc.text(`${index + 1}. ${item.product_name} - ${item.quantity} x $${item.price} = $${item.subtotal}`);
-  });
+
+  for (const [index, item] of invoice.items.entries()) {
+    const product = await Product.findById(item.product_id).select('name'); // Fetch product name
+    const product_name = product ? product.name : 'Unknown Product';
+    doc.text(
+      `${index + 1}. ${product_name} - ${item.quantity} x ksh${item.price} = ksh${item.subtotal}`
+    );
+  }
 
   doc.moveDown();
-  doc.text(`Subtotal: $${invoice.subtotal}`);
-  doc.text(`Tax: $${invoice.tax}`);
-  doc.text(`Shipping Cost: $${invoice.shipping_cost}`);
-  doc.text(`Total: $${invoice.total}`);
+  doc.text(`Subtotal: ksh${invoice.subtotal}`);
+  doc.text(`Tax: ksh${invoice.tax}`);
+  doc.text(`Shipping Cost: ksh${invoice.shipping_cost}`);
+  doc.text(`Total: ksh${invoice.total}`);
 
-  doc.end();
+  doc.end(); // Finalize the PDF document
 
-  return Buffer.concat(chunks); // Return the PDF as a Buffer
+  return Buffer.concat(chunks); // Return the PDF as a buffer
 };
+
+
 
 exports.createOrder = async (req, res, next) => {
   try {
@@ -142,12 +153,13 @@ exports.createOrder = async (req, res, next) => {
       payment_status: 'pending',
     });
 
-    const pdfBuffer = generateInvoicePDF(invoice);
+    const pdfBuffer =await generateInvoicePDF(invoice);
     console.log('pdf buffer length:', pdfBuffer.length);
     if(pdfBuffer.length === 0){
       throw new AppError("Error generating PDF", 500);
     }
     const filePath  = `./public/invoices/Invoice-${newOrder.order_number}.pdf`;
+    console.log('file saved at:', filePath);
 
     //ensure that the file is written to the disk
     const dirPath = path.dirname(filePath);
@@ -185,7 +197,7 @@ exports.createOrder = async (req, res, next) => {
       attachments: [
         {
           filename: `Invoice-${newOrder.order_number}.pdf`,
-          content: filePath,
+          content: pdfBuffer,
         },
       ],
     };

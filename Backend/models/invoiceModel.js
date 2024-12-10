@@ -16,7 +16,7 @@ const invoiceSchema = new mongoose.Schema({
     subtotal: {type: Number, required: true},
     total: {type: Number, required: true},
     tax: {type: Number},
-    shiping_cost: {type: Number},
+    shipping_cost: {type: Number},
     businessCode: {type: String, required: true},
     payment_status: {type: String, enum: ['paid', 'pending'], default: 'pending'},
 
