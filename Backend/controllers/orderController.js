@@ -7,6 +7,7 @@ const {v4: uuidv4} = require("uuid");
 const nodemailer = require("nodemailer");
 const Business  = require("../models/businessModel");
 const validator = require("validator");
+const Invoice = require("../models/invoiceModel");
 
 dotenv.config({ path: "../config.env" });
 
