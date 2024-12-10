@@ -8,6 +8,9 @@ const nodemailer = require("nodemailer");
 const Business  = require("../models/businessModel");
 const validator = require("validator");
 const Invoice = require("../models/invoiceModel");
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
 
 dotenv.config({ path: "../config.env" });
 
@@ -42,6 +45,39 @@ const getNextOrderNumber = async (businessCode) => {
     { new: true, upsert: true }
   );
   return counter.sequence_value;
+};
+
+const generateInvoicePDF = (invoice) => {
+  const doc = new PDFDocument();
+  const chunks = [];
+
+  // Buffer the PDF data
+  doc.on('data', (chunk) => chunks.push(chunk));
+  doc.on('end', () => console.log('PDF created'));
+
+  // Add invoice details
+  doc.fontSize(20).text('Invoice', { align: 'center' });
+  doc.moveDown();
+  doc.fontSize(14).text(`Invoice Number: ${invoice.invoice_number}`);
+  doc.text(`Customer Name: ${invoice.customer_name}`);
+  doc.text(`Customer Email: ${invoice.customer_email}`);
+  doc.text(`Order Date: ${invoice.order_date}`);
+  doc.moveDown();
+
+  doc.text('Items:');
+  invoice.items.forEach((item, index) => {
+    doc.text(`${index + 1}. ${item.product_name} - ${item.quantity} x $${item.price} = $${item.subtotal}`);
+  });
+
+  doc.moveDown();
+  doc.text(`Subtotal: $${invoice.subtotal}`);
+  doc.text(`Tax: $${invoice.tax}`);
+  doc.text(`Shipping Cost: $${invoice.shipping_cost}`);
+  doc.text(`Total: $${invoice.total}`);
+
+  doc.end();
+
+  return Buffer.concat(chunks); // Return the PDF as a Buffer
 };
 
 exports.createOrder = async (req, res, next) => {
@@ -86,7 +122,37 @@ exports.createOrder = async (req, res, next) => {
       businessCode: req.body.businessCode,
     });
    
-    
+    const invoice = await Invoice.create({
+      invoice_number: uuidv4(),
+      order_id: newOrder._id,
+      customer_name: newOrder.customer_name,
+      customer_email: newOrder.customer_email,
+      items: newOrder.items.map((item) => ({
+        product_id: item.Product_id,
+        product_name: item.product_name,
+        quantity: item.quantity,
+        price: item.price,
+        subtotal: item.subtotal,
+      })),
+      subtotal: newOrder.subtotal,
+      total: newOrder.total,
+      tax: newOrder.tax,
+      shipping_cost: newOrder.shipping_cost,
+      businessCode: newOrder.businessCode,
+      payment_status: 'pending',
+    });
+
+    const pdfBuffer = generateInvoicePDF(invoice);
+    const filePath  = `./public/invoices/Invoice-${newOrder.order_number}.pdf`;
+
+    //ensure that the file is written to the disk
+    const dirPath = path.dirname(filePath);
+
+    if(!fs.existsSync(dirPath)){ //check if the directory exists
+      fs.mkdirSync(dirPath, {recursive: true}); //create the directory if it does not exist
+    }
+
+    fs.writeFileSync(filePath, pdfBuffer);
 
     for(const item of req.body.items){
       await Product.findByIdAndUpdate(item.Product_id, {$inc: {stock: - item.quantity}});
@@ -108,11 +174,17 @@ exports.createOrder = async (req, res, next) => {
     }
 
     const mailOptions = {
-      from: business.email || "noreply@MTIS.org",
+      from: business.email,
       to: newOrder.customer_email,
-      subject: `Order Confirmation: ${newOrder.order_number}`,
-      messsage: `Dear ${newOrder.customer_name}, your order has been received and is being processed. Your order number is ${newOrder.order_number}.`,
-    }
+      subject: `Order Confirmation & Invoice: ${newOrder.order_number}`,
+      text: `Dear ${newOrder.customer_name},\n\nThank you for your order!\n\nOrder Number: ${newOrder.order_number}\nOrder Date: ${newOrder.order_date}\nTotal: ${newOrder.total}\n\nPlease find your invoice attached.\n\nBest regards,\n${business.businessName}`,
+      attachments: [
+        {
+          filename: `Invoice-${newOrder.order_number}.pdf`,
+          content: filePath,
+        },
+      ],
+    };
 
     transporter.sendMail(mailOptions, (err, info) => {
       if(err){
