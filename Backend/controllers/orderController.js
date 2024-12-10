@@ -42,13 +42,13 @@ exports.createOrder = async (req, res, next) => {
   try {
     const orderNumber = uuidv4();
     const items = req.body.items.map((item) => ({
-      product_id: item.product_id,
+      Product_id: item.Product_id,
       quantity: item.quantity,
       price: item.price,
       subtotal: item.quantity * item.price,
     }));
     for(const item of req.body.items){
-      const product  = await Product.findById(item.product_id);
+      const product  = await Product.findById(item.Product_id);
 
       if(!product){
         return next(new AppError("Product not found", 404));
@@ -60,7 +60,7 @@ exports.createOrder = async (req, res, next) => {
     }
     const tax = req.body.tax || 0;
     const shippingCost = req.body.shipping_cost || 0;
-    const totalAmount = items.reduce((acc, item) => acc + item.subtotal, 0) + tax + shippingCost;
+    const totalAmount = items.reduce((acc, item) => acc + parseFloat(item.subtotal), 0) + parseFloat(tax) + parseFloat(shippingCost);
 
   
     const newOrder = await order.create({
@@ -79,7 +79,7 @@ exports.createOrder = async (req, res, next) => {
     });
 
     for(const item of req.body.items){
-      await Product.findByIdAndUpdate(item.product_id, {$inc: {stock: - item.quantity}});
+      await Product.findByIdAndUpdate(item.Product_id, {$inc: {stock: - item.quantity}});
     }
 
     res.status(201).json({
