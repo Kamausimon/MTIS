@@ -97,14 +97,14 @@ exports.createOrder = async (req, res, next) => {
 };
 exports.getOrder = async (req, res, next) => {
   try {
-    const order = await order.findById(req.params.id);
-    if (!order) {
+    const oneOrder = await order.findById(req.params.id);
+    if (!oneOrder) {
       return next(new AppError("No order found with that ID", 404));
     }
     res.status(200).json({
       status: "success",
       data: {
-        order,
+        oneOrder,
       },
     });
   } catch (err) {
@@ -116,14 +116,21 @@ exports.getOrder = async (req, res, next) => {
 };
 exports.updateOrder = async (req, res, next) => {
   try {
-    const updatedOrder = await order.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
+    const updatedOrder = await order.findByIdAndUpdate
+    (req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!updatedOrder) {
+      return next(new AppError("No order found with that ID", 404));
+    }
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        updatedOrder,
+      },
+    });
   } catch (err) {
     res.status(400).json({
       status: "fail",
@@ -133,11 +140,11 @@ exports.updateOrder = async (req, res, next) => {
 };
 exports.deleteOrder = async (req, res, next) => {
   try {
-    const order = await order.findByIdAndDelete(req.params.id);
+    const deleteOrder = await order.findByIdAndDelete(req.params.id);
 
 
 
-    if (!order) {
+    if (!deleteOrder) {
       return next(new AppError("No order found with that ID", 404));
     }
     res.status(204).json({

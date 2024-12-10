@@ -19,7 +19,7 @@ router
   .route("/:id")
   .delete(
     authController.protectRoute,
-    authController.restrictToManager,
+    authController.restrictToAdmin,
     orderController.deleteOrder
   ); // Delete order
 
