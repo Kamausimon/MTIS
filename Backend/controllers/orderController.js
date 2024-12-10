@@ -143,6 +143,10 @@ exports.createOrder = async (req, res, next) => {
     });
 
     const pdfBuffer = generateInvoicePDF(invoice);
+    console.log('pdf buffer length:', pdfBuffer.length);
+    if(pdfBuffer.length === 0){
+      throw new AppError("Error generating PDF", 500);
+    }
     const filePath  = `./public/invoices/Invoice-${newOrder.order_number}.pdf`;
 
     //ensure that the file is written to the disk
@@ -152,7 +156,7 @@ exports.createOrder = async (req, res, next) => {
       fs.mkdirSync(dirPath, {recursive: true}); //create the directory if it does not exist
     }
 
-    fs.writeFileSync(filePath, pdfBuffer);
+    fs.writeFileSync(filePath, pdfBuffer, 'binary');
 
     for(const item of req.body.items){
       await Product.findByIdAndUpdate(item.Product_id, {$inc: {stock: - item.quantity}});
