@@ -6,10 +6,10 @@ const router = express.Router({ mergeParams: true });
 
 //ROUTES
 router
-  .route("/")
+  .route("/getAllOrders")
   .get(authController.protectRoute, orderController.getAllOrders); // Get all orders
 router
-  .route("/")
+  .route("/createOrder")
   .post(authController.protectRoute, orderController.createOrder); // Create a new order
 router.route("/:id").get(authController.protectRoute, orderController.getOrder); // Get a single order
 router
