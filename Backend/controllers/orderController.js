@@ -4,6 +4,11 @@ const AppError = require("../utils/AppError");
 const dotenv = require("dotenv");
 const Counter = require("../models/counterModel");
 const {v4: uuidv4} = require("uuid");
+const nodemailer = require("nodemailer");
+const Business  = require("../models/businessModel");
+const validator = require("validator");
+
+dotenv.config({ path: "../config.env" });
 
 //create a new order
 exports.getAllOrders = async (req, res, next) => {
@@ -62,7 +67,9 @@ exports.createOrder = async (req, res, next) => {
     const shippingCost = req.body.shipping_cost || 0;
     const totalAmount = items.reduce((acc, item) => acc + parseFloat(item.subtotal), 0) + parseFloat(tax) + parseFloat(shippingCost);
 
-  
+  if(!validator.isEmail(req.body.customer_email)){
+    return next(new AppError("Please provide a valid email", 400));
+  }
     const newOrder = await order.create({
       order_number: orderNumber,
       order_date: req.body.order_date,
@@ -77,10 +84,36 @@ exports.createOrder = async (req, res, next) => {
       shipping_cost: req.body.shipping_cost,
       businessCode: req.body.businessCode,
     });
+   
+    
 
     for(const item of req.body.items){
       await Product.findByIdAndUpdate(item.Product_id, {$inc: {stock: - item.quantity}});
     }
+
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: process.env.EMAIL_PORT,
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const business = await Business.findOne({businessCode: req.body.businessCode});
+
+    if(!business){
+      return next(new AppError("Business not found", 404));
+    }
+
+    const mailOptions = {
+      from: business.email,
+      to: newOrder.customer_email,
+      subject: `Order Confirmation: ${newOrder.order_number}`,
+      messsage: `Dear ${newOrder.customer_name}, your order has been received and is being processed. Your order number is ${newOrder.order_number}.`,
+    }
+
+    await transporter.sendMail(mailOptions);
 
     res.status(201).json({
       status: "success",
