@@ -1,5 +1,5 @@
 const order = require("../models/orderModel");
-
+const Product = require("../models/productModel");
 const AppError = require("../utils/AppError");
 const dotenv = require("dotenv");
 const Counter = require("../models/counterModel");
@@ -46,7 +46,22 @@ exports.createOrder = async (req, res, next) => {
       price: item.price,
       subtotal: item.quantity * item.price,
     }));
-    const totalAmount = items.reduce((acc, item) => acc + item.subtotal, 0);
+    for(const item of req.body.items){
+      const product  = await Product.findById(item.product_id);
+
+      if(!product){
+        return next(new AppError("Product not found", 404));
+      }
+
+      if(item.quantity > product.stock){
+        return next(new AppError("Not enough stock", 400));
+      }
+    }
+    const tax = req.body.tax || 0;
+    const shippingCost = req.body.shipping_cost || 0;
+    const totalAmount = items.reduce((acc, item) => acc + item.subtotal, 0) + tax + shippingCost;
+
+  
     const newOrder = await order.create({
       order_number: orderNumber,
       order_date: req.body.order_date,
@@ -56,11 +71,15 @@ exports.createOrder = async (req, res, next) => {
       customer_address: req.body.customer_address,
       items: items,
       total: totalAmount,
-      subtotal: req.body.subtotal,
+      subtotal: items.reduce((acc, item) => acc + item.subtotal, 0),
       tax: req.body.tax,
       shipping_cost: req.body.shipping_cost,
       businessCode: req.body.businessCode,
     });
+
+    for(const item of req.body.items){
+      await Product.findByIdAndUpdate(item.product_id, {$inc: {stock: - item.quantity}});
+    }
 
     res.status(201).json({
       status: "success",

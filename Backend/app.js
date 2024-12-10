@@ -8,6 +8,7 @@ const hpp = require("hpp");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const globalErrorHandler = require("./controllers/errorController");
+const AppError = require("./utils/AppError");
 
 const app = express();
 require("dotenv").config({ path: "./config.env" });
