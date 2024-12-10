@@ -107,12 +107,19 @@ exports.createOrder = async (req, res, next) => {
     }
 
     const mailOptions = {
-      from: business.email,
+      from: business.email || "noreply@MTIS.org",
       to: newOrder.customer_email,
       subject: `Order Confirmation: ${newOrder.order_number}`,
       messsage: `Dear ${newOrder.customer_name}, your order has been received and is being processed. Your order number is ${newOrder.order_number}.`,
     }
 
+    transporter.sendMail(mailOptions, (err, info) => {
+      if(err){
+        console.log('there was an error:',err);
+      }else{
+        console.log("email sent",info);
+      }
+    });
     await transporter.sendMail(mailOptions);
 
     res.status(201).json({
