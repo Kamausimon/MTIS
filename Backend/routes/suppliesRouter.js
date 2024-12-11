@@ -18,4 +18,6 @@ router.route("/:id")
   .patch(authController.protectRoute, suppliesController.updateSupply)
   .delete(authController.protectRoute, suppliesController.deleteSupply);
 
+  router.route('/getSuppliesBySupplier/:supplierId').get(authController.protectRoute, suppliesController.getSuppliesBySupplier);
+
 module.exports = router;
