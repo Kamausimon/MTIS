@@ -52,9 +52,7 @@ const supplierRouter = require("./routes/supplierRouter");
 const categoryRouter = require("./routes/categoryRouter");
 const auditRouter = require("./routes/auditRouter");
 const businessRouter = require("./routes/businessRouter");
-
-
-
+const suppliesRouter = require("./routes/suppliesRouter");
 
 
 
@@ -87,6 +85,7 @@ app.use("/api/v1/suppliers", supplierRouter);
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/audits", auditRouter);
 app.use("/api/v1/businesses", businessRouter);
+app.use("/api/v1/supplies", suppliesRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
