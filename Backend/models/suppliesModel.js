@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 
 
 const suppliesSchema = new mongoose.Schema({
-    supplier: {
+    supplierId: {
         type: mongoose.Schema.ObjectId,
-        ref: "Suppliers",
+        ref: "Supplier",
         required: [true, "Supply must have a supplier"]
     },
-    product: {
+    productId: {
         type: mongoose.Schema.ObjectId,
-        ref: "Products",
+        ref: "Product",
         required: [true, "Supply must have a product"]
     },
     quantity: {
@@ -23,9 +23,21 @@ const suppliesSchema = new mongoose.Schema({
     date: {
         type: Date,
         default: Date.now()
+    },
+    businessCode: {
+        type: String,
+        required: true
     }
 }, {
     timestamps: true
+});
+
+suppliesSchema.index({ supplierId: 1, productId: 1 });
+
+suppliesSchema.pre('save', async function (next) {
+    if(!mongoose.Types.ObjectId.isValid(this.supplierId) || !mongoose.Types.ObjectId.isValid(this.productId)) {
+        next(new Error('Invalid supplier or product ID'));
+    }
 });
 
 const Supplies = mongoose.model("Supplies", suppliesSchema);

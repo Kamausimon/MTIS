@@ -15,9 +15,9 @@ router.route("/registerSupply")
 
 router.route("/:id")
   .get(authController.protectRoute, suppliesController.getSupply)
-  .patch(authController.protectRoute, suppliesController.updateSupply)
-  .delete(authController.protectRoute, suppliesController.deleteSupply);
+  .patch(authController.protectRoute, authController.restrictToAdmin, suppliesController.updateSupply)
+  .delete(authController.protectRoute, authController.restrictToAdmin, suppliesController.deleteSupply);
 
-  router.route('/getSuppliesBySupplier/:supplierId').get(authController.protectRoute, suppliesController.getSuppliesBySupplier);
+  router.route('/getSuppliesBySupplier/:supplierId').get(authController.protectRoute,authController.restrictToAdmin, suppliesController.getSuppliesBySupplier);
 
 module.exports = router;

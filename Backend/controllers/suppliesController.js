@@ -2,8 +2,9 @@ const express = require("express");
 const Supplies = require("../models/suppliesModel");
 const AppError = require("../utils/AppError");
 const Suppliers = require("../models/supplierModel");
-const products = require("../models/productModel");
+const Product = require("../models/productModel");
 const Inventory = require("../models/inventoryModel");
+const mongoose = require("mongoose");
 
 
 exports.getAllSupplies = async (req, res, next) => {
@@ -29,41 +30,79 @@ exports.getAllSupplies = async (req, res, next) => {
     }
 };
 
+
+
+
 exports.registerSupply = async (req, res, next) => {
-    try{
-        const {supplier, product, quantity, price} = req.body;
+    // Start session for transaction
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-        const newSupply = await Supplies.create({
-            supplier,
-            product,
-            quantity,
-            price
+    try {
+        const { supplierId, productId, quantity, price , businessCode} = req.body;
+
+        // Validate required fields
+        if (!supplierId || !productId || !quantity || !price || !businessCode) {
+            return next(new AppError('Missing required fields', 400));
+        }
+
+        // Find product first
+        const product = await Product.findOne({ 
+            _id: productId,
+            businessCode 
         });
-
-        if(!newSupply){
-            return next(new AppError("Supply not registered", 404));
+        if (!product) {
+            return next(new AppError('Product not found', 404));
         }
 
-        const productStock = await Inventory.findOne({where: {productId: product}});
+        const supply = {
+            supplierId,
+            productId,
+            quantity: Number(quantity),
+            price: Number(price),
+            businessCode
+        };
 
-        if(productStock ){
-            productStock.stock += quantity;
-            await productStock.save();
-        }else if(!productStock){
-            await Inventory.create({productId: product, stock: quantity});
+        // Create supply record
+        const newSupply = await Supplies.create([supply], { session });
+
+        // Update product stock
+        product.stock += supply.quantity;
+        await product.save({ session });
+
+        // Update or create inventory
+        const productStock = await Inventory.findOne({ productId: supply.productId, businessCode });
+        if (productStock) {
+            productStock.quantity += supply.quantity;
+            await productStock.save({ session });
+        } else {
+            await Inventory.create([{
+                productId: supply.productId,
+                quantity: supply.quantity,
+                price: supply.price,
+                businessCode
+            }], { session });
         }
 
-        res.status(200).json({
+        // Commit transaction
+        await session.commitTransaction();
+
+        res.status(201).json({
             status: "success",
-            data: newSupply
+            data: {
+                supply: newSupply[0],
+                product: product,
+                inventory: productStock,
+                businessCode
+            }
         });
 
-    }catch(err){
-        res.status(400).json({
-            status: "fail",
-            message: err.message,
-            stack: err.stack
-        });
+    } catch (err) {
+        // Abort transaction on error
+        await session.abortTransaction();
+        return next(new AppError(err.message, 400));
+    } finally {
+        session.endSession();
     }
 };
 
@@ -136,23 +175,45 @@ exports.deleteSupply = async (req, res, next) => {
 };
 
 exports.getSuppliesBySupplier = async (req, res, next) => {
-    try{
-        const supplies = await Supplies.find({supplier: req.params.supplierId});
+    try {
+        const { supplierId } = req.params;
+        // Fixed query with new ObjectId
+        const query = {
+            supplierId,
+            businessCode: req.user.businessCode
+        };
+    
 
-        if(!supplies){
-            return next(new AppError("No supplies found", 404));
+        const supplies = await Supplies.find(query).sort({ createdAt: -1 })
+        .populate({
+            path: 'supplierId',
+            select: 'name email phone'
+        })
+        .populate({
+            path: 'productId',
+            select: 'name price stock'
+        });
+         
+
+        console.log('Found supplies count:', supplies.length);
+
+        if (!supplies || supplies.length === 0) {
+            return res.status(200).json({
+                status: "success",
+                results: 0,
+                message: "No supplies found for this supplier",
+                data: []
+            });
         }
 
         res.status(200).json({
             status: "success",
+            results: supplies.length,
             data: supplies
         });
 
-    }catch(err){
-        res.status(400).json({
-            status: "fail",
-            message: err.message,
-            stack: err.stack
-        });
+    } catch (err) {
+        console.error('Error:', err);
+        return next(new AppError(err.message, 400));
     }
 };

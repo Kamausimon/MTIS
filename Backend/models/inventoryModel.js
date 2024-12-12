@@ -17,6 +17,10 @@ const inventorySchema = new mongoose.Schema({
   lastUpdated: {
     type: Date,
     default: Date.now()
+  },
+  businessCode: {
+    type: String,
+    required: true
   }
 },
 {
