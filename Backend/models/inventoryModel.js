@@ -1,27 +1,28 @@
-const {DataTypes} = require('sequelize');
-const sequelize = require('../db');
+const mongoose = require('mongoose');
 
-const Inventory = sequelize.define('Inventory', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
-    productId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
-    quantity: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-    },
-    lastUpdated: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-    },
-}, {
-    tableName: 'inventories',
-    timestamps: true, // Adds createdAt and updatedAt automatically
+const inventorySchema = new mongoose.Schema({
+  productId: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Product',
+    required: [true, 'Product ID is required']
+  },
+  quantity: {
+    type: Number,
+    required: [true, 'Quantity is required']
+  },
+  price: {
+    type: Number,
+    required: [true, 'Price is required']
+  },
+  lastUpdated: {
+    type: Date,
+    default: Date.now()
+  }
+},
+{
+  timestamps: true
 });
 
+
+const Inventory = mongoose.model('Inventory', inventorySchema);
 module.exports = Inventory;
