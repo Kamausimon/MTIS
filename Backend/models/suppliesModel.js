@@ -19,6 +19,10 @@ const suppliesSchema = new mongoose.Schema({
     price: {
         type: Number,
         required: [true, "Supply must have a price"]
+    },
+    date: {
+        type: Date,
+        default: Date.now()
     }
 }, {
     timestamps: true

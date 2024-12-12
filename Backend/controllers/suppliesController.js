@@ -3,6 +3,7 @@ const Supplies = require("../models/suppliesModel");
 const AppError = require("../utils/AppError");
 const Suppliers = require("../models/supplierModel");
 const products = require("../models/productModel");
+const Inventory = require("../models/inventoryModel");
 
 
 exports.getAllSupplies = async (req, res, next) => {
@@ -41,6 +42,15 @@ exports.registerSupply = async (req, res, next) => {
 
         if(!newSupply){
             return next(new AppError("Supply not registered", 404));
+        }
+
+        const productStock = await Inventory.findOne({where: {productId: product}});
+
+        if(productStock ){
+            productStock.stock += quantity;
+            await productStock.save();
+        }else if(!productStock){
+            await Inventory.create({productId: product, stock: quantity});
         }
 
         res.status(200).json({
