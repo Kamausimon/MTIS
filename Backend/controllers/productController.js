@@ -38,25 +38,41 @@ exports.getAllProducts = async (req, res, next) => {
 
 exports.getLowStockProducts = async (req, res, next) => {
   try {
-    const lowStockProdusts = await product.find({
-      businessCode: req.params.businessCode,
-      stock: { $lte: "$low_stock_threshold" },
-    });
+    // Validate user and business code
+    if (!req.user || !req.user.businessCode) {
+      return next(new AppError('Not authorized', 401));
+    }
+
+    const lowStockProducts = await product.aggregate([
+      {
+        $match: {
+          businessCode: req.user.businessCode
+        }
+      },
+      {
+        $match: {
+          $expr: {
+            $lte: ["$stock", "$low_stock_threshold"]
+          }
+        }
+      }
+    ]);
 
     res.status(200).json({
       status: "success",
-      result: lowStockProdusts.length,
-      data: {
-        products: lowStockProdusts,
-      },
+      results: lowStockProducts.length,
+      data: lowStockProducts
     });
   } catch (err) {
     res.status(400).json({
       status: "fail",
       message: err.message,
+      stack: err.stack
     });
   }
 };
+
+
 
 exports.createProduct = async (req, res, next) => {
   try {

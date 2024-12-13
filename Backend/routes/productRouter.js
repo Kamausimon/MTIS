@@ -36,8 +36,7 @@ router.route("/:id")
     productController.deleteProduct
   ); // Delete product
 
-router.route(
-  "/low-stock" ).get(
+router.route("/" ).get(
   authController.protectRoute,
   productController.getLowStockProducts
 ); // Get low stock products
