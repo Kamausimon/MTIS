@@ -8,9 +8,6 @@ import Landing from "./pages/landing";
 
 
 function App() {
-
-  
-
   return (
 <Router>
      <Routes> 
