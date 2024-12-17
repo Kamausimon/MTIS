@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Footer from './Footer';
 
 export default function Landing() {
   return (
@@ -23,7 +24,7 @@ export default function Landing() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center">
           <h1 className="text-4xl tracking-tight font-extrabold text-slate-900 sm:text-5xl md:text-6xl">
-            <span className="block">Manage Your Inventory</span>
+            <span className="block">Manage Your Business</span>
             <span className="block text-blue-600">Like Never Before</span>
           </h1>
           <p className="mt-3 max-w-md mx-auto text-base text-slate-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
@@ -61,6 +62,7 @@ export default function Landing() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
