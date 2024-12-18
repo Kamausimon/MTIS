@@ -15,6 +15,7 @@ require("dotenv").config({ path: "./config.env" });
 
 app.use(helmet());
 app.options("*", cors());
+app.use(cors());
 
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000,

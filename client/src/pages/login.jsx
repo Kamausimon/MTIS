@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+
 export default function Login() {
   const [formData, setFormData] = useState({
     email: '',
@@ -20,7 +21,7 @@ export default function Login() {
     try {
       const response = await axios.post('http://localhost:4000/api/v1/users/login', formData);
       localStorage.setItem('token', response.data.token);
-      navigate('/home');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     } finally {
@@ -37,6 +38,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
