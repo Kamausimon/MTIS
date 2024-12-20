@@ -51,7 +51,7 @@ export default function Dashboard() {
       <Sidebar />
       <div className="flex-1 p-6">
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p>Welcome to your dashboard. Here you can manage your inventory, view reports, and more.</p>
+        <p>Welcome to your products page. </p>
         <Link to="/profile" className="text-blue-500 hover:underline">Go to Profile</Link>
 
         {loading ? (
@@ -59,13 +59,20 @@ export default function Dashboard() {
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : (
-          <div className="mt-6">
-            <h2 className="text-2xl font-bold mb-4">Products</h2>
+          <div className="mt-6 "> 
+          <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold mb-4">Products</h2> 
+            <Link to="/products/create" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+            Create Product
+          </Link>
+          </div>
+       
             <ul className="space-y-4">
               {products.length > 0 ? (
                 products.map((product) => (
                   <li key={product._id} className="p-4 border rounded-md shadow-sm">
                     <h3 className="text-xl font-semibold">{product.name}</h3>
+                    <p>Description:{product.description}</p>
                     <p>Price: ksh {product.price}</p>
                     <p>Stock: {product.stock}</p>
                     {product.stock < product.low_stock_threshold && (

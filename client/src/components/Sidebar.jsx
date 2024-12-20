@@ -9,6 +9,7 @@ export default function Sidebar() {
     { to: '/profile', label: 'Profile' },
     { to: '/products', label: 'Products' },
     { to: '/supplies', label: 'Supplies' },
+    {to: '/categories', label: 'Categories'}, 
     { to: '/settings', label: 'Settings' },
     {to: 'analytics', label: 'Analytics'},
     {to: '/orders', label: 'Orders'},

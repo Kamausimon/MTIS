@@ -7,10 +7,13 @@ export default function ProductForm({ mode }) {
   const [formData, setFormData] = useState({
     name: '',
     price: '',
+    description: '',
+    categoryId: '',
     stock: '',
     low_stock_threshold: '',
     image_url: ''
   });
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -40,6 +43,25 @@ export default function ProductForm({ mode }) {
       [e.target.name]: e.target.value
     });
   };
+
+  const handleFileChange= async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const formData = new FormData();
+    formData.append('image', file);
+    try{
+       const token = localStorage.getItem('token');
+         const response = await axios.post('http://localhost:4000/api/v1/products/upload', formData, {
+            headers: { Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',}
+         }); setFormData({
+              ...formData,
+              image_url: response.data.data.imageUrl
+         })
+      }catch(err){
+     setError(err.response?.data?.message || 'Failed to upload image');
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,6 +103,34 @@ export default function ProductForm({ mode }) {
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
         </div>
+
+        <div>
+            <label className='block text-sm font-medium text-gray-700'>description</label>
+            <input 
+            type='text'
+            name='description'
+            value={formData.description}
+            onChange={handleChange}
+            required
+            className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
+            />
+        </div>
+  
+    <div>
+            <label className="block text-sm font-medium text-gray-700">categoryId</label>
+            <select
+              type="text"
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              required
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <option value="">Select Category</option>
+                
+
+                </select>
+    </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700">Price</label>
           <input
@@ -114,15 +164,16 @@ export default function ProductForm({ mode }) {
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
         </div>
+  
+
         <div>
-          <label className="block text-sm font-medium text-gray-700">Image URL</label>
-          <input
-            type="text"
-            name="image_url"
-            value={formData.image_url}
-            onChange={handleChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          />
+            <label className="block text-sm font-medium text-gray-700">Image upload</label>
+            <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
         </div>
         <button
           type="submit"

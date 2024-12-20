@@ -10,10 +10,12 @@ import Products from './pages/products';
 import CreateProduct from './pages/createProduct';
 import EditProduct from './pages/editProduct';
 import Supplies from './pages/supplies';
+import Categories from './pages/categories';
 import Settings from './pages/settings';
 import Analytics from './pages/analytics';
 import Orders from './pages/orders';
 import Logout from './pages/logout';
+
 
 
 function App() {
@@ -30,6 +32,7 @@ function App() {
       <Route path="/profile" element={<Profile />} />
       <Route path="/supplies" element={<Supplies />} />
       <Route path="/settings" element={<Settings />} />
+      <Route path="/categories" element={<Categories />} />
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/orders" element={<Orders />} />
       <Route path="/logout" element={<Logout />} />
