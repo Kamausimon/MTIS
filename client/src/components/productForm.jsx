@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
+import jwt_decode from 'jwt-decode';
 
 export default function ProductForm({ mode }) {
   const [formData, setFormData] = useState({
@@ -11,7 +12,8 @@ export default function ProductForm({ mode }) {
     categoryId: '',
     stock: '',
     low_stock_threshold: '',
-    image_url: ''
+    image_url: '',
+    businessCode: ''
   });
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -19,7 +21,39 @@ export default function ProductForm({ mode }) {
   const navigate = useNavigate();
   const { id } = useParams();
 
+
+
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if(token){
+        const decodedToken = jwt_decode(token);
+       setFormData((prevFormData)=> ({
+         ...prevFormData,
+            businessCode: decodedToken.businessCode
+       }))
+    }
+    const fetchCategories = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('http://localhost:4000/api/v1/categories/allCategories', {
+            headers: { Authorization: `Bearer ${token}` }
+            });
+           const childCategories = response.data.data;
+           const filtered = childCategories.filter((category) => category.level === 1);
+
+            if(Array.isArray(response.data.data)){
+            setCategories(filtered || []);} else{
+            
+                setError('Failed to fetch categories');
+            }
+        } catch (err) {
+            console.log('error fetching categories', err);
+            setError('Failed to fetch categories');
+        }
+    };
+
+    fetchCategories();
+
     if (mode === 'edit' && id) {
       const fetchProduct = async () => {
         try {
@@ -51,13 +85,14 @@ export default function ProductForm({ mode }) {
     formData.append('image', file);
     try{
        const token = localStorage.getItem('token');
-         const response = await axios.post('http://localhost:4000/api/v1/products/upload', formData, {
+         const response = await axios.post('http://localhost:4000/api/v1/public/uploads/products', formData, {
             headers: { Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',}
-         }); setFormData({
-              ...formData,
+         }); setFormData((prev) => ({
+              ...prev,
               image_url: response.data.data.imageUrl
-         })
+         }))
+         console.log('image uploaded successfully', response.data.data.imageUrl);
       }catch(err){
      setError(err.response?.data?.message || 'Failed to upload image');
     }
@@ -65,13 +100,14 @@ export default function ProductForm({ mode }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(!formData.name || !formData.price || !formData.description || !formData.categoryId || !formData.stock || !formData.low_stock_threshold){ setError('Please fill in all fields'); return; }
     setLoading(true);
     setError('');
 
     try {
       const token = localStorage.getItem('token');
       if (mode === 'create') {
-        await axios.post('http://localhost:4000/api/v1/products', formData, {
+        await axios.post('http://localhost:4000/api/v1/products/create', formData, {
           headers: { Authorization: `Bearer ${token}` }
         });
       } else {
@@ -81,6 +117,7 @@ export default function ProductForm({ mode }) {
       }
       navigate('/products');
     } catch (err) {
+        console.log('error', err);
       setError(err.response?.data?.message || 'Failed to save product');
     } finally {
       setLoading(false);
@@ -119,16 +156,17 @@ export default function ProductForm({ mode }) {
     <div>
             <label className="block text-sm font-medium text-gray-700">categoryId</label>
             <select
-              type="text"
               name="categoryId"
               value={formData.categoryId}
               onChange={handleChange}
               required
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-              <option value="">Select Category</option>
-                
-
-                </select>
+              <option value="" className='text-sm'>Select Category</option>
+              { categories.map((category) => (
+                <option key={category._id} value={category._id} className='text-sm'>{category.name}</option>
+              ))}
+          
+ </select>
     </div>
 
         <div>
