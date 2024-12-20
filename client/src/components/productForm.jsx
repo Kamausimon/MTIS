@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import jwt_decode from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 
 export default function ProductForm({ mode }) {
   const [formData, setFormData] = useState({
@@ -26,7 +26,7 @@ export default function ProductForm({ mode }) {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if(token){
-        const decodedToken = jwt_decode(token);
+        const decodedToken = jwtDecode(token);
        setFormData((prevFormData)=> ({
          ...prevFormData,
             businessCode: decodedToken.businessCode
