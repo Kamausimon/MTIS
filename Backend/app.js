@@ -45,6 +45,8 @@ app.use((req, res, next) => {
 });
 
 
+
+
 //ROUTES
 const userRouter = require("./routes/userRouter");
 const productRouter = require("./routes/productRouter");

@@ -87,7 +87,7 @@ exports.createProduct = async (req, res, next) => {
 
     if (req.file) {
       imageUrl =
-        req.file.location || `/public/uploads/products/${req.file.filename}`;
+        req.file.location || `../public/uploads/products/${req.file.filename}`;
     }
 
     console.log('looking for category with ', {

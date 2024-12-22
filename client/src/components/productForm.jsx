@@ -82,10 +82,10 @@ export default function ProductForm({ mode }) {
     const file = e.target.files[0];
     if(!file) return;
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('image', file,e.target.files[0].name,e.target.files[0]);
     try{
        const token = localStorage.getItem('token');
-         const response = await axios.post('http://localhost:4000/api/v1/public/uploads/products', formData, {
+         const response = await axios.post('http://localhost:4000/api/v1/products/create', formData, {
             headers: { Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',}
          }); setFormData((prev) => ({
@@ -94,6 +94,7 @@ export default function ProductForm({ mode }) {
          }))
          console.log('image uploaded successfully', response.data.data.imageUrl);
       }catch(err){
+        console.log('error uploading image', err);
      setError(err.response?.data?.message || 'Failed to upload image');
     }
   }
@@ -210,6 +211,7 @@ export default function ProductForm({ mode }) {
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
+                required
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             />
         </div>
