@@ -15,6 +15,7 @@ exports.getAllProducts = async (req, res, next) => {
     if (!products) {
       return next(new AppError("No products found", 404));
     }
+    
 
     const lowStockProducts = products.filter((product) => product.isLowStock());
 
@@ -85,11 +86,11 @@ exports.createProduct = async (req, res, next) => {
     console.log('received category id', req.body.categoryId);
 
     const sku = uuidv4();
-    let imageUrl = "";
 
-    if (req.file) {
-      imageUrl =req.file ? req.file.location : "null";
-    }
+
+    
+    const imageUrl =req.body.image_url || "";
+    
 
     console.log('looking for category with ', {
       _id: req.body.categoryId,

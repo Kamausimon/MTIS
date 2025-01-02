@@ -11,7 +11,11 @@ AWS.config.update({
   region: process.env.AWS_REGION,
 });
 
-const s3 = new AWS.S3();
+const s3 = new AWS.S3({
+  apiVersion: '2006-03-01',
+  signatureVersion: 'v4',
+  region: process.env.AWS_REGION,
+});
 
 router.get('/presigned-url', (req, res) => {
   const { filename, fileType } = req.query;
@@ -19,22 +23,31 @@ router.get('/presigned-url', (req, res) => {
   if (!filename || !fileType) {
     return res.status(400).json({ status: 'fail', message: 'Missing filename or fileType' });
   }
+ 
+  const sanitizedFileName = filename.replace(/\s+/g, '_');
+  const s3Key =  sanitizedFileName;
+  const bucketUrl = `https://${process.env.AWS_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${s3Key}`;
+
 
   const params = {
-    Bucket: process.env.AWS_BUCKET_NAME,
-    Key: filename,
+    Bucket: process.env.AWS_BUCKET,
+    Key: s3Key,
     ContentType: fileType,
-    Expires: 60, // URL expires in 60 seconds
+    Expires: 60,
   };
 
-  s3.getSignedUrl('putObject', params, (err, url) => {
+
+
+s3.getSignedUrl('putObject', params, (err, url) => {
     if (err) {
       console.error('Error generating pre-signed URL:', err);
       return res.status(500).json({ status: 'fail', message: 'Could not generate pre-signed URL' });
     }
 
-    res.status(200).json({ status: 'success', url });
+    res.status(200).json({ status: 'success', url, key: params.Key, bucketUrl });
+    console.log('Pre-signed URL:', url);
   });
+
 });
 
 module.exports = router;

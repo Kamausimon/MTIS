@@ -48,9 +48,9 @@ export default function ProductForm({ mode }) {
           console.log('error fetching categories', err);
           setError('Failed to fetch categories');
       }
-  };
+    };
 
-  fetchCategories();
+        fetchCategories();
 
 
     if (mode === 'edit' && id) {
@@ -80,11 +80,13 @@ export default function ProductForm({ mode }) {
     const file = e.target.files[0];
     if (!file) return;
 
-    const token = localStorage.getItem('token');
+    const sanitizedFileName = file.name.replace(/\s+/g, '_');
+
+
     const fileName = encodeURIComponent(file.name);
     const fileType = encodeURIComponent(file.type);
 
-    console.log('token', token);
+
     console.log('fileName', fileName);
     console.log('fileType', fileType);
 
@@ -93,22 +95,31 @@ export default function ProductForm({ mode }) {
       const token = localStorage.getItem('token');
       const presignedUrlResponse = await axios.get('http://localhost:4000/api/v1/presigned-url', {
         headers: { Authorization: `Bearer ${token}` },
-        params: { filename: file.name, fileType: file.type },
+        params: { filename: sanitizedFileName, fileType: file.type,  },
       });
 
-      const { url, key } = presignedUrlResponse.data;
+      console.log('presignedUrlResponse', presignedUrlResponse.data);
+
+      const { url, key, bucketUrl } = presignedUrlResponse.data;
+
+      if(!key){
+        throw new Error('file key or url not found');
+      }
 
       // Step 2: Upload file to S3 using pre-signed URL
-      await axios.put(url, file, {
+     const response =  await axios.put(url, file, {
         headers: { 'Content-Type': file.type },
       });
+
+      console.log('response', response.status);
 
       // Step 3: Update formData with the S3 object key or URL
       setFormData((prev) => ({
         ...prev,
-        image_url: key, // Or the full S3 URL if preferred
+        image_url: bucketUrl, // Or the full S3 URL if preferred
       }));
-      console.log('Image uploaded successfully:', key);
+      console.log('Image uploaded successfully:', url);
+  
     } catch (err) {
       console.error('Error uploading image:', err);
       console.error('Error uploading image:', err.response);

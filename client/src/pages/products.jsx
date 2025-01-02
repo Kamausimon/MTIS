@@ -79,7 +79,7 @@ export default function Dashboard() {
                       <p className="text-red-500">Low stock</p>
                     )}
                     {product.image_url && (
-                      <img src={product.image_url} alt={product.name} className="w-32 h-32 object-cover rounded-md mt-2" />
+                      <img src={product.image_url} alt={product.name} className="w-32 h-32 object-contain rounded-md mt-2" />
                     )}
                     <div className='mt-4 flex space-x-4'>
                       <button onClick={() => handleEdit(product._id)} className="bg-blue-500 text-white px-4 py-2 rounded-md">
