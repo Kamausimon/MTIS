@@ -76,18 +76,19 @@ exports.getLowStockProducts = async (req, res, next) => {
 
 exports.createProduct = async (req, res, next) => {
   try {
-    console.log('request body', req.body);
+
 
     if (!req.body.categoryId) {
       return next(new AppError("Category is required", 400));
     }
 
+    console.log('received category id', req.body.categoryId);
+
     const sku = uuidv4();
     let imageUrl = "";
 
     if (req.file) {
-      imageUrl =
-        req.file.location || `../public/uploads/products/${req.file.filename}`;
+      imageUrl =req.file ? req.file.location : "null";
     }
 
     console.log('looking for category with ', {

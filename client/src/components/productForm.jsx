@@ -1,8 +1,7 @@
-// src/components/ProductForm.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-import {jwtDecode} from 'jwt-decode';
+import {jwtDecode}from 'jwt-decode';
 
 export default function ProductForm({ mode }) {
   const [formData, setFormData] = useState({
@@ -13,7 +12,7 @@ export default function ProductForm({ mode }) {
     stock: '',
     low_stock_threshold: '',
     image_url: '',
-    businessCode: ''
+    businessCode: '',
   });
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -21,45 +20,44 @@ export default function ProductForm({ mode }) {
   const navigate = useNavigate();
   const { id } = useParams();
 
-
-
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if(token){
-        const decodedToken = jwtDecode(token);
-       setFormData((prevFormData)=> ({
-         ...prevFormData,
-            businessCode: decodedToken.businessCode
-       }))
+    if (token) {
+      const decodedToken = jwtDecode(token);
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        businessCode: decodedToken.businessCode,
+      }));
     }
+
     const fetchCategories = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const response = await axios.get('http://localhost:4000/api/v1/categories/allCategories', {
-            headers: { Authorization: `Bearer ${token}` }
-            });
-           const childCategories = response.data.data;
-           const filtered = childCategories.filter((category) => category.level === 1);
+      try {
+          const token = localStorage.getItem('token');
+          const response = await axios.get('http://localhost:4000/api/v1/categories/allCategories', {
+          headers: { Authorization:  `Bearer ${token}` }
+          });
+         const childCategories = response.data.data;
+         const filtered = childCategories.filter((category) => category.level === 1);
 
-            if(Array.isArray(response.data.data)){
-            setCategories(filtered || []);} else{
-            
-                setError('Failed to fetch categories');
-            }
-        } catch (err) {
-            console.log('error fetching categories', err);
-            setError('Failed to fetch categories');
-        }
-    };
+          if(Array.isArray(response.data.data)){
+          setCategories(filtered || []);} else{
+          
+              setError('Failed to fetch categories');
+          }
+      } catch (err) {
+          console.log('error fetching categories', err);
+          setError('Failed to fetch categories');
+      }
+  };
 
-    fetchCategories();
+  fetchCategories();
+
 
     if (mode === 'edit' && id) {
       const fetchProduct = async () => {
         try {
-          const token = localStorage.getItem('token');
           const response = await axios.get(`http://localhost:4000/api/v1/products/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
           });
           setFormData(response.data.data.product);
         } catch (err) {
@@ -74,52 +72,78 @@ export default function ProductForm({ mode }) {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleFileChange= async (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    if(!file) return;
-    const formData = new FormData();
-    formData.append('image', file,e.target.files[0].name,e.target.files[0]);
-    try{
-       const token = localStorage.getItem('token');
-         const response = await axios.post('http://localhost:4000/api/v1/products/create', formData, {
-            headers: { Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',}
-         }); setFormData((prev) => ({
-              ...prev,
-              image_url: response.data.data.imageUrl
-         }))
-         console.log('image uploaded successfully', response.data.data.imageUrl);
-      }catch(err){
-        console.log('error uploading image', err);
-     setError(err.response?.data?.message || 'Failed to upload image');
+    if (!file) return;
+
+    const token = localStorage.getItem('token');
+    const fileName = encodeURIComponent(file.name);
+    const fileType = encodeURIComponent(file.type);
+
+    console.log('token', token);
+    console.log('fileName', fileName);
+    console.log('fileType', fileType);
+
+    try {
+      // Step 1: Request pre-signed URL from backend
+      const token = localStorage.getItem('token');
+      const presignedUrlResponse = await axios.get('http://localhost:4000/api/v1/presigned-url', {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { filename: file.name, fileType: file.type },
+      });
+
+      const { url, key } = presignedUrlResponse.data;
+
+      // Step 2: Upload file to S3 using pre-signed URL
+      await axios.put(url, file, {
+        headers: { 'Content-Type': file.type },
+      });
+
+      // Step 3: Update formData with the S3 object key or URL
+      setFormData((prev) => ({
+        ...prev,
+        image_url: key, // Or the full S3 URL if preferred
+      }));
+      console.log('Image uploaded successfully:', key);
+    } catch (err) {
+      console.error('Error uploading image:', err);
+      console.error('Error uploading image:', err.response);
+      setError('Failed to upload image');
     }
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(!formData.name || !formData.price || !formData.description || !formData.categoryId || !formData.stock || !formData.low_stock_threshold){ setError('Please fill in all fields'); return; }
+    if (!formData.name || !formData.price || !formData.description || !formData.categoryId || !formData.stock || !formData.low_stock_threshold) {
+      setError('Please fill in all fields');
+      return;
+    }
     setLoading(true);
     setError('');
 
     try {
       const token = localStorage.getItem('token');
       if (mode === 'create') {
-        await axios.post('http://localhost:4000/api/v1/products/create', formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.post(
+          'http://localhost:4000/api/v1/products/create',
+          formData,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
       } else {
-        await axios.patch(`http://localhost:4000/api/v1/products/${id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await axios.patch(
+          `http://localhost:4000/api/v1/products/${id}`,
+          formData,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
       }
       navigate('/products');
     } catch (err) {
-        console.log('error', err);
-      setError(err.response?.data?.message || 'Failed to save product');
+      console.error('Error saving product:', err);
+      setError('Failed to save product');
     } finally {
       setLoading(false);
     }
@@ -143,32 +167,34 @@ export default function ProductForm({ mode }) {
         </div>
 
         <div>
-            <label className='block text-sm font-medium text-gray-700'>description</label>
-            <input 
-            type='text'
-            name='description'
+          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <input
+            type="text"
+            name="description"
             value={formData.description}
             onChange={handleChange}
             required
-            className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
-            />
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          />
         </div>
-  
-    <div>
-            <label className="block text-sm font-medium text-gray-700">categoryId</label>
-            <select
-              name="categoryId"
-              value={formData.categoryId}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-              <option value="" className='text-sm'>Select Category</option>
-              { categories.map((category) => (
-                <option key={category._id} value={category._id} className='text-sm'>{category.name}</option>
-              ))}
-          
- </select>
-    </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Category</label>
+          <select
+            name="categoryId"
+            value={formData.categoryId}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          >
+            <option value="">Select Category</option>
+            {categories.map((category) => (
+              <option key={category._id} value={category._id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700">Price</label>
@@ -181,6 +207,7 @@ export default function ProductForm({ mode }) {
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700">Stock</label>
           <input
@@ -192,6 +219,7 @@ export default function ProductForm({ mode }) {
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
         </div>
+
         <div>
           <label className="block text-sm font-medium text-gray-700">Low Stock Threshold</label>
           <input
@@ -203,18 +231,18 @@ export default function ProductForm({ mode }) {
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
         </div>
-  
 
         <div>
-            <label className="block text-sm font-medium text-gray-700">Image upload</label>
-            <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            />
+          <label className="block text-sm font-medium text-gray-700">Image Upload</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+          />
         </div>
+
         <button
           type="submit"
           disabled={loading}

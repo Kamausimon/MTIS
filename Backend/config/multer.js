@@ -1,34 +1,42 @@
-const express = require("express");
+const AWS = require("aws-sdk");
 const multer = require("multer");
-const path = require("path");
+const multerS3 = require("multer-s3");
+const dotenv = require("dotenv");
 
-const imageUploadPath = "C:/Users/ADMIN//Downloads/MTIS/client/public/uploads/";
+dotenv.config({ path: "../config.env" });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, imageUploadPath);
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
-  },
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_KEY,
+  region: process.env.AWS_REGION,
 });
 
-const fileFilter = (req, res, cb) => {
- const allowedTypes  = /jpeg|jpg|png|gif/;
- const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
- const mimetype = allowedTypes.test(file.mimetype);
-
- if(extname && mimetype){
-   return cb(null, true);
- }
-   else{
-      cb('Images only!');
-   }
-};
-
 const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
+  storage: multerS3({
+    s3: s3,
+    bucket: "your-bucket-name",
+    acl: "public-read",
+    metadata: (req, file, cb) => {
+      cb(null, { fieldName: file.fieldname });
+    },
+    key: (req, file, cb) => {
+      cb(null, `uploads/products/${Date.now()}_${file.originalname}`);
+    },
+  }),
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif/;
+    const extname = allowedTypes.test(
+      path.extname(file.originalname).toLowerCase()
+    );
+    const mimetype = allowedTypes.test(file.mimetype);
+
+    if (extname && mimetype) {
+      cb(null, true);
+    } else {
+      cb(new Error("Images only!"));
+    }
+  },
+  limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
 });
 
 module.exports = upload;
