@@ -14,6 +14,8 @@ export default function ProductForm({ mode }) {
     image_url: '',
     businessCode: '',
   });
+
+  const[previewImage, setPreviewImage] = useState('');
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -55,12 +57,20 @@ export default function ProductForm({ mode }) {
 
     if (mode === 'edit' && id) {
       const fetchProduct = async () => {
-        try {
+        try { 
+          const token = localStorage.getItem('token');
           const response = await axios.get(`http://localhost:4000/api/v1/products/${id}`, {
-            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+            headers: { Authorization: `Bearer ${token}` },
           });
-          setFormData(response.data.data.product);
+           const product = response.data.data.singleProduct;
+         setFormData((prevFormData) => ({
+            ...prevFormData,
+            ...product,
+            categoryId: product.category|| '',
+         }));
+        setPreviewImage(product.image_url);
         } catch (err) {
+          console.error('Error fetching product:', err);
           setError('Failed to fetch product');
         }
       };
@@ -249,9 +259,14 @@ export default function ProductForm({ mode }) {
             type="file"
             accept="image/*"
             onChange={handleFileChange}
-            required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
+        </div>
+
+        <div>
+          {previewImage && (
+            <img src={previewImage} alt="Product" className="w-32 h-32 object-contain rounded-md mt-2" />
+          )}
         </div>
 
         <button
