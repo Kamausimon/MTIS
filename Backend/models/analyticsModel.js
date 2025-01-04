@@ -11,10 +11,6 @@ const analyticsSchema = new mongoose.Schema({
         required: true,
         ref: "Business",
     },
-    sessionId: {
-        type: String,
-        required: true,
-    },
     page: {
         type: String,
         required: true,

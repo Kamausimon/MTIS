@@ -16,7 +16,7 @@ dotenv.config({ path: "../config.env" });
 //create a jwt sign token function
 const signToken = (user) => {
   return jwt.sign(
-    { id: user._id, businessCode: user.businessCode },
+    { id: user._id, businessCode: user.businessCode, role: user.role },
     process.env.JWT_SECRET,
     {
       expiresIn: process.env.JWT_EXPIRES_IN,

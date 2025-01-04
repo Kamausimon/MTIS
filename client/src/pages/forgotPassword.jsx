@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import Logger from '../components/logger';
 
 export default function ForgotPassword() {
   const [formData, setFormData] = useState({
@@ -35,6 +36,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <Logger eventName='page_view' eventData={{page: 'forgot_password'}} />
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
