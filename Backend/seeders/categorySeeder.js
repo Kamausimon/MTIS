@@ -13,6 +13,20 @@ const parentCategories = [
   { name: "Sports and Fitness", description: "Sports and fitness products", level: 0 },
   { name: "Toys and Games", description: "Toys and games for kids", level: 0 },
   { name: "Stationery", description: "Stationery and office supplies", level: 0 },
+  {name: "Home Appliances", description: "Home appliances and accessories", level: 0},
+  {name: "Home Decor", description: "Home decor and accessories", level: 0},
+  {name: "Kitchen Appliances", description: "Kitchen appliances and accessories", level: 0},
+  {name: "Mobile Accessories", description: "Mobile accessories and parts", level: 0},
+  {name: "Laptop Accessories", description: "Laptop accessories and parts", level: 0},
+  {name: "Television", description: "Televisions and accessories", level: 0},
+  {name: "Watches", description: "Watches and accessories", level: 0},
+  {name: "Jewellery", description: "Jewellery and accessories", level: 0},
+  {name: "Sunglasses", description: "Sunglasses and eyewear", level: 0},
+  {name: "Footwear", description: "Footwear and shoes", level: 0},
+  {name: "Bags", description: "Bags and backpacks", level: 0},
+  {name: "Wallets", description: "Wallets and purses", level: 0},
+  {name:"food", description: "food and beverages", level: 0},
+  {name:"beverages", description: "beverages and drinks", level: 0},
 
 ];
 

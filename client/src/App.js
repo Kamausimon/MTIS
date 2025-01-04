@@ -15,7 +15,7 @@ import Settings from './pages/settings';
 import Analytics from './pages/analytics';
 import Orders from './pages/orders';
 import Logout from './pages/logout';
-
+import CreateCategory from './pages/createCategory';
 
 
 function App() {
@@ -37,6 +37,8 @@ function App() {
       <Route path="/orders" element={<Orders />} />
       <Route path="/logout" element={<Logout />} />
       <Route path="/forgotPassword" element={<ForgotPassword />} />
+      <Route path="/createCategory" element={<CreateCategory />} />
+            <Route path="*" element={<h1>Not Found</h1>} />
      </Routes>
 </Router>
   );
