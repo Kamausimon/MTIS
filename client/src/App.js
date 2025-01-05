@@ -16,6 +16,9 @@ import Analytics from './pages/analytics';
 import Orders from './pages/orders';
 import Logout from './pages/logout';
 import CreateCategory from './pages/createCategory';
+import CreateSupply from './pages/createSupply';
+import Suppliers from './pages/suppliers';
+import CreateSupplier from './pages/createSupplier';
 
 
 function App() {
@@ -38,6 +41,9 @@ function App() {
       <Route path="/logout" element={<Logout />} />
       <Route path="/forgotPassword" element={<ForgotPassword />} />
       <Route path="/createCategory" element={<CreateCategory />} />
+      <Route path="/createSupply" element={<CreateSupply />} />
+      <Route path="/suppliers" element={<Suppliers />} />
+      <Route path="/createSupplier" element={<CreateSupplier />} />
             <Route path="*" element={<h1>Not Found</h1>} />
      </Routes>
 </Router>

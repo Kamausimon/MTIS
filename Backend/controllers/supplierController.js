@@ -9,24 +9,30 @@ exports.getAllSuppliers = async (req, res, next) => {
   try {
     const suppliers = await supplier.find();
 
-    if (!suppliers) {
+    if (!suppliers || suppliers.length === 0) {
       return next(new AppError("No suppliers found", 404));
-    } //if no suppliers are found, return an error
+    }
+
     res.status(200).json({
       status: "success",
       result: suppliers.length,
       data: {
-        suppliers,
+        suppliers: suppliers,
       },
     });
   } catch (err) {
+    console.error("Error:", err); // Log errors for debugging
     res.status(400).json({
       status: "fail",
       message: err.message,
     });
   }
 };
+
+
 exports.createSupplier = async (req, res, next) => {
+      
+
   try {
     const newSupplier = await supplier.create({
       name: req.body.name,

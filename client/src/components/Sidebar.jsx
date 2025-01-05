@@ -19,11 +19,13 @@ const Sidebar = () => {
     { to: '/profile', label: 'Profile' },
     { to: '/products', label: 'Products' },
     { to: '/supplies', label: 'Supplies' },
+    {to: '/suppliers', label: 'Suppliers'},
     { to: '/categories', label: 'Categories' },
     { to: '/settings', label: 'Settings' },
     { to: '/analytics', label: 'Analytics', roles: ['admin', 'manager'] },
     { to: '/orders', label: 'Orders', roles: ['admin', 'manager'] },
     { to: '/logout', label: 'Logout' },
+
   ];
 
   return (

@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import Sidebar from '../components/sidebar';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 export default function Categories() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [filteredCategories, setFilteredCategories] = useState([]);
 
   const navigate = useNavigate();
 
@@ -28,6 +30,7 @@ export default function Categories() {
 
         if (Array.isArray(response.data.data)) {
           setCategories(filtered || []);
+          setFilteredCategories(filtered || []);
         } else {
           setError('Failed to fetch categories');
         }
@@ -45,14 +48,29 @@ export default function Categories() {
   navigate('/createCategory');
   }
 
+  const handleSearch = () => {
+    const token = localStorage.getItem('token');
+    const decodedToken = jwtDecode(token);
+    const businessCode = decodedToken.businessCode;
+    const customCategories = categories.filter((category) => category.businessCode === businessCode);
+    setFilteredCategories(customCategories);
+  }
+
   return (
     <div>
       <div className="flex">
         <Sidebar />
         <div className="flex-1 p-6">
-          <h1 className="text-3xl font-bold mb-4">Create Custom Categories</h1>
+           <div className="flex justify-between items-center">
+               <div>
+               <h1 className="text-3xl font-bold mb-4">Create Custom Categories</h1>
           <p className="text-sm">Welcome to your categories page.</p>
           <p className="text-sm mb-4">Here you can view all categories and create custom categories.</p>
+               </div>
+                <div>
+                  <button onClick={handleSearch} className=' mt-4 px-4 py-2 bg-blue-600 text-white rounded-md'>View Custom Categories</button>
+                </div>
+           </div>
           {loading ? (
             <p>Loading...</p>
           ) : error ? (
@@ -67,7 +85,7 @@ export default function Categories() {
                   </tr>
                 </thead>
                 <tbody>
-                  {categories.map((category) => (
+                  {filteredCategories.map((category) => (
                     <tr key={category._id}>
                       <td className="py-2 px-4 border-b border-gray-200">{category.name}</td>
                       <td className="py-2 px-4 border-b border-gray-200">{category.description}</td>
