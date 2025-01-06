@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
+import Multiselect from 'multiselect-react-dropdown';
 
 export default function SupplierForm() {
   const [formData, setFormData] = useState({
@@ -47,6 +48,17 @@ export default function SupplierForm() {
       setFormData({ ...formData, [name]: value });
     }
   };
+
+  const multiselectOptions = products.map((product) => ({ name: product.name, id: product._id }));
+
+  const handleChangeMultiSelect = (selectedList) => {
+    const selectedProductIds = selectedList.map((product) => product.id);
+    setFormData({ ...formData, products: selectedProductIds });
+  };
+  
+
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -163,20 +175,19 @@ export default function SupplierForm() {
         </div>
         <div>
           <label htmlFor="products" className="block text-sm font-medium text-gray-700">Products</label>
-          <select
-            name="products"
-            id="products"
-            className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-            value={formData.products}
-            onChange={handleChange}
-            required
-            multiple
-          >
-            <option value="">Select Products</option>
-            {products.map((product) => (
-              <option key={product._id} value={product._id}>{product.name}</option>
-            ))}
-          </select>
+          <Multiselect
+  className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+  isObject={true}
+  options={multiselectOptions}
+  selectedValues= { formData.products.map((productId) => {
+    const product = products.find((p) => p._id === productId);
+    return product ? { name: product.name, id: product._id } : null;
+  }).filter(Boolean)}
+  onSelect={handleChangeMultiSelect}
+  onRemove={handleChangeMultiSelect}
+  displayValue="name"
+/>
+
         </div>
         <div>
           <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Notes</label>
