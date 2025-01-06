@@ -20,6 +20,7 @@ export default function SupplierForm() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -35,6 +36,7 @@ export default function SupplierForm() {
     };
     fetchProducts();
   }, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,7 +59,6 @@ export default function SupplierForm() {
         const businessCode = decodedToken.businessCode;
         const transformedProducts = formData.products.map((product) => ({Product_id: product}));
         const dataToSend  = {businessCode, ...formData, products: transformedProducts};
-        console.log(dataToSend);
       const response = await axios.post('http://localhost:4000/api/v1/suppliers/createSupplier', dataToSend, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -169,6 +170,7 @@ export default function SupplierForm() {
             value={formData.products}
             onChange={handleChange}
             required
+            multiple
           >
             <option value="">Select Products</option>
             {products.map((product) => (
