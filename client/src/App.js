@@ -21,6 +21,7 @@ import Suppliers from './pages/suppliers';
 import CreateSupplier from './pages/createSupplier';
 
 
+
 function App() {
   return (
 <Router>
@@ -44,6 +45,7 @@ function App() {
       <Route path="/createSupply" element={<CreateSupply />} />
       <Route path="/suppliers" element={<Suppliers />} />
       <Route path="/createSupplier" element={<CreateSupplier />} />
+   
             <Route path="*" element={<h1>Not Found</h1>} />
      </Routes>
 </Router>
