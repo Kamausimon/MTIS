@@ -5,8 +5,11 @@ import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 
 
+
 export default function Supplies() {
   const [supplies, setSupplies] = useState([]);
+  const [suppliesProducts, setSuppliesProducts] = useState({});
+  const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -23,7 +26,8 @@ export default function Supplies() {
         const response = await axios.get('http://localhost:4000/api/v1/supplies/getAllSupplies', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const suppliesData = response.data.data.supplies || [];
+        console.log('response', response);
+        const suppliesData = response.data.data || [];
         setSupplies(suppliesData);
       } catch (err) {
         console.error(err);
@@ -35,12 +39,57 @@ export default function Supplies() {
     fetchSupplies();
   }, []);
 
+  useEffect(()=> {
+    const fetchProductsForSupplies= async () => {
+         try{
+          const token = localStorage.getItem('token');
+          console.log('products fetched', token);
+          const productsBySupplier = {};
+          await Promise.all(
+            supplies.map(async (supply) => {
+              const productIds = supplies.products.map((p) => p.Product_id);
+                console.log('productIds', productIds);
+              const productPromises = productIds.map((id) =>
+                axios
+                  .get(`http://localhost:4000/api/v1/products/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                  })
+                  .then((res) => res.data.data.singleProduct)
+              );
+              const products = await Promise.all(productPromises);
+              productsBySupplier[supply._id] = products;
+            })
+          );
+          setSuppliesProducts(productsBySupplier);
+         }catch(err){
+           console.error(err);
+           setError('Failed to fetch products for suppliers');
+         }
+    };
+    fetchProductsForSupplies();
+  }, [supplies]);
+
+  useEffect(()=> {
+    const fetchSuppliersForSuppliers = async () => {
+  //initialize the token 
+  const token = localStorage.getItem('token');
+  //get the suppliers using the token
+  const response = await axios.get()
+
+  //get the specific supplier using the supplier id and the token
+
+  //set the supplier 
+  
+
+    };
+  })
+
   const handleCreateSupply = () => {
     navigate('/createSupply');};
 
    return(
          <div className="flex">
-              <Logger eventName='page_view' eventData={{page: 'supplies'}} />
+             
               <Sidebar />
               <div className="flex-1 p-6">
                <div className='flex justify-between items-center'>
@@ -73,8 +122,17 @@ export default function Supplies() {
                         <tbody>
                           {supplies.map((supply) => (
                             <tr key={supply._id}>
-                              <td className="py-2 px-4 border-b border-gray-200">{supply.supplierId}</td>
-                              <td className="py-2 px-4 border-b border-gray-200">{supply.productId}</td>
+                              <td className="py-2 px-4 border-b border-gray-200">{supply.name}</td>
+                              <td className="py-2 px-4 border-b border-gray-200">
+                                {suppliesProducts[supply._id] && suppliesProducts[supply._id].length > 0? (
+                                  suppliesProducts[supply._id].map((product) => (
+                                    <span key={product._id}>{product.name}</span>
+                                  ))
+                                ) : (
+                                  <span>No products found</span>
+
+                                )}
+                              </td>
                               <td className="py-2 px-4 border-b border-gray-200">{supply.quantity}</td>
                               <td className="py-2 px-4 border-b border-gray-200">{supply.price}</td>
                             </tr>
