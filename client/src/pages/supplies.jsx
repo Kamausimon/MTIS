@@ -1,6 +1,5 @@
 import React ,{useState, useEffect} from 'react';
 import Sidebar from '../components/sidebar';
-import Logger from '../components/logger';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 
@@ -8,8 +7,8 @@ import {useNavigate} from 'react-router-dom';
 
 export default function Supplies() {
   const [supplies, setSupplies] = useState([]);
-  const [suppliesProducts, setSuppliesProducts] = useState({});
-  const [suppliers, setSuppliers] = useState([]);
+  const [productName, setProductName] = useState('');
+  const [supplierName, setSupplierName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -26,7 +25,7 @@ export default function Supplies() {
         const response = await axios.get('http://localhost:4000/api/v1/supplies/getAllSupplies', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log('response', response);
+      
         const suppliesData = response.data.data || [];
         setSupplies(suppliesData);
       } catch (err) {
@@ -39,50 +38,76 @@ export default function Supplies() {
     fetchSupplies();
   }, []);
 
-  useEffect(()=> {
-    const fetchProductsForSupplies= async () => {
-         try{
-          const token = localStorage.getItem('token');
-          console.log('products fetched', token);
-          const productsBySupplier = {};
-          await Promise.all(
-            supplies.map(async (supply) => {
-              const productIds = supplies.products.map((p) => p.Product_id);
-                console.log('productIds', productIds);
-              const productPromises = productIds.map((id) =>
-                axios
-                  .get(`http://localhost:4000/api/v1/products/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                  })
-                  .then((res) => res.data.data.singleProduct)
-              );
-              const products = await Promise.all(productPromises);
-              productsBySupplier[supply._id] = products;
-            })
-          );
-          setSuppliesProducts(productsBySupplier);
-         }catch(err){
-           console.error(err);
-           setError('Failed to fetch products for suppliers');
-         }
-    };
-    fetchProductsForSupplies();
-  }, [supplies]);
-
-  useEffect(()=> {
-    const fetchSuppliersForSuppliers = async () => {
-  //initialize the token 
-  const token = localStorage.getItem('token');
-  //get the suppliers using the token
-  const response = await axios.get()
-
-  //get the specific supplier using the supplier id and the token
-
-  //set the supplier 
+  useEffect(() => {
+    const fetchProductName = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const productData = {};
   
-
+        // Use Promise.all to handle multiple async requests
+        const promises = supplies.map(async (supply) => {
+          const productId = supply.productId; // Assuming productId is an object with $oid
+     
+  
+          const response = await axios.get(`http://localhost:4000/api/v1/products/${productId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+  
+          const productName = response.data.data.singleProduct.name;
+    
+  
+          productData[supply._id] = productName; // Assuming _id is an object with $oid
+        });
+  
+        // Wait for all requests to complete
+        await Promise.all(promises);
+  
+   
+        setProductName(productData);
+      } catch (err) {
+        console.error('Error fetching product names:', err);
+        setError('Failed to fetch product names');
+      }
     };
-  })
+  
+    fetchProductName();
+  }, [supplies]);
+  
+  
+useEffect(()=> {
+  const fetchSupplierName = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const supplierData = {};
+
+      const promises = supplies.map(async (supply) => {
+        const supplierId = supply.supplierId;
+        console.log('Supplier ID:', supplierId);
+
+        const response = await axios.get(`http://localhost:4000/api/v1/suppliers/${supplierId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        console.log('Supplier response:', response.data.data.oneSupplier.name);
+        const supplierName = response.data.data.oneSupplier.name;
+        console.log('Supplier name:', supplierName);
+
+        supplierData[supply._id] = supplierName;
+      });
+
+      await Promise.all(promises);
+
+      console.log('Final Supplier Data:', supplierData);
+      setSupplierName(supplierData);
+    } catch (err) {
+      console.error('Error fetching supplier names:', err);
+      setError('Failed to fetch supplier names');
+    }
+  }
+  fetchSupplierName();
+}, [supplies]);
+
+
 
   const handleCreateSupply = () => {
     navigate('/createSupply');};
@@ -122,16 +147,9 @@ export default function Supplies() {
                         <tbody>
                           {supplies.map((supply) => (
                             <tr key={supply._id}>
-                              <td className="py-2 px-4 border-b border-gray-200">{supply.name}</td>
+                              <td className="py-2 px-4 border-b border-gray-200">{supplierName[supply._id] || 'Loading...'}</td>
                               <td className="py-2 px-4 border-b border-gray-200">
-                                {suppliesProducts[supply._id] && suppliesProducts[supply._id].length > 0? (
-                                  suppliesProducts[supply._id].map((product) => (
-                                    <span key={product._id}>{product.name}</span>
-                                  ))
-                                ) : (
-                                  <span>No products found</span>
-
-                                )}
+                             {productName[supply._id] || 'Loading...'}
                               </td>
                               <td className="py-2 px-4 border-b border-gray-200">{supply.quantity}</td>
                               <td className="py-2 px-4 border-b border-gray-200">{supply.price}</td>

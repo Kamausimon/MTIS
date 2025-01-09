@@ -1,6 +1,6 @@
 import React from 'react';
 import Sidebar from '../components/sidebar';
-import SupplierForm from '../components/supplierForm';
+import SuppliesForm from '../components/suppliesForm';
 
 export default function CreateSupplier() {
     
@@ -10,7 +10,7 @@ export default function CreateSupplier() {
         <Sidebar />
         <div className="flex-1 p-6">
           <h1 className="text-3xl font-bold mb-4">Create Supplier</h1>
-          <SupplierForm />
+          <SuppliesForm />
         </div>
       </div>
     </div>
