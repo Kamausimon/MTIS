@@ -28,6 +28,7 @@ export default function SuppliesForm() {
                 const response = await axios.get('http://localhost:4000/api/v1/suppliers/getAllSuppliers', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+                console.log('response', response.data);
                 setSuppliers(response.data.data.suppliers || []);
             } catch (err) {
                 console.log('error fetching suppliers', err);
@@ -44,6 +45,7 @@ export default function SuppliesForm() {
                 const response = await axios.get('http://localhost:4000/api/v1/products/allProducts', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+                console.log('response', response.data);
                 setProducts(response.data.data.products || []);
             } catch (err) {
                 console.log('error fetching products', err);
@@ -108,7 +110,10 @@ export default function SuppliesForm() {
                   <Multiselect
                   className='mt-1 p-2 w-full border border-gray-300 rounded-md'
                   isObject={true}
-                  selectedValues = {formData.products.map((product) => ({name: product.name, id: product._id}))}
+                    selectedValues={formData.products.map((productId)=> {
+                        const product = products.find((p)=> p._id === productId);
+                        return product? {name: product.name, id: product._id} : null;
+                    }).filter(Boolean)}
                     options={multiselectOptions}
                     displayValue="name"
                     onSelect={handleChangeMultiSelect}
@@ -117,18 +122,18 @@ export default function SuppliesForm() {
                 </div>
 
                 <div>
-                    <label htmlFor='quantity'>Quantity</label>
-                    <input type='number' name='quantity' id='quantity' onChange={handleChange} value={formData.quantity} required />
+                    <label htmlFor='quantity'className='block text-sm font-medium text-gray-700'>Quantity</label>
+                    <input  className="mt-1 p-2 w-full border border-gray-300 rounded-md" type='number' name='quantity' id='quantity' onChange={handleChange} value={formData.quantity} required />
                 </div>
                
                <div>
-                    <label htmlFor='price'>Price</label>
-                    <input type='number' name='price' id='price' onChange={handleChange} value={formData.price} required />
+                    <label htmlFor='price' className='block text-sm font-medium text-gray-700'>Price</label>
+                    <input  className="mt-1 p-2 w-full border border-gray-300 rounded-md" type='number' name='price' id='price' onChange={handleChange} value={formData.price} required />
                 </div>
 
                 <div>
-                    <label htmlFor='date'>Date</label>
-                    <input type='date' name='date' id='date' onChange={handleChange} value={formData.date} required />
+                    <label htmlFor='date' className='block text-sm font-medium text-gray-700'>Date</label>
+                    <input  className="mt-1 p-2 w-full border border-gray-300 rounded-md" type='date' name='date' id='date' onChange={handleChange} value={formData.date} required />
                 </div>
 
                 <div>
