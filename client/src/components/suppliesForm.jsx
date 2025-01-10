@@ -55,6 +55,7 @@ export default function SuppliesForm() {
 
     const multiselectOptions = products.map((product) => ({ name: product.name, id: product._id }));
 
+
     const handleChangeMultiSelect = (selectedList) => {
         const selectedProductIds = selectedList.map((product) => product.id);
         setFormData((prevFormData) => ({ ...prevFormData, products: selectedProductIds }));

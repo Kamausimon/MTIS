@@ -82,22 +82,22 @@ useEffect(()=> {
 
       const promises = supplies.map(async (supply) => {
         const supplierId = supply.supplierId;
-        console.log('Supplier ID:', supplierId);
+  
 
         const response = await axios.get(`http://localhost:4000/api/v1/suppliers/${supplierId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        console.log('Supplier response:', response.data.data.oneSupplier.name);
+     
         const supplierName = response.data.data.oneSupplier.name;
-        console.log('Supplier name:', supplierName);
+  
 
         supplierData[supply._id] = supplierName;
       });
 
       await Promise.all(promises);
 
-      console.log('Final Supplier Data:', supplierData);
+   
       setSupplierName(supplierData);
     } catch (err) {
       console.error('Error fetching supplier names:', err);
