@@ -9,7 +9,7 @@ export default function CreateSupplier() {
       <div className="flex">
         <Sidebar />
         <div className="flex-1 p-6">
-          <h1 className="text-3xl font-bold mb-4">Create Supplier</h1>
+          <h1 className="text-3xl font-bold mb-4">Create Supply</h1>
           <SuppliesForm />
         </div>
       </div>
