@@ -39,49 +39,55 @@ exports.registerSupply = async (req, res, next) => {
     session.startTransaction();
 
     try {
-        const { supplierId, productId, quantity, price , businessCode} = req.body;
+           const {supplierId, products, quantity, price, businessCode} = req.body;
 
         // Validate required fields
-        if (!supplierId || !productId || !quantity || !price || !businessCode) {
-            return next(new AppError('Missing required fields', 400));
-        }
-
-        // Find product first
-        const product = await Product.findOne({ 
-            _id: productId,
-            businessCode 
-        });
-        if (!product) {
-            return next(new AppError('Product not found', 404));
-        }
+   if(!req.body.supplierId || !req.body.products || req.body.products.length===0|| !req.body.quantity || req.body.quantity <=0|| !req.body.price|| req.body.price<=0){
+       throw new AppError('invalid input', 400);
+   }
 
         const supply = {
-            supplierId,
-            productId,
-            quantity: Number(quantity),
-            price: Number(price),
-            businessCode
+            supplierId: req.body.supplierId,
+            products: req.body.products,
+            quantity: req.body.quantity,
+            price: req.body.price,
+            businessCode: req.body.businessCode
         };
+   
 
         // Create supply record
         const newSupply = await Supplies.create([supply], { session });
+                
+         // Update inventory and stock for each product
+         for (const productItem of products) {
+            const { productId, quantity, price } = productItem;
 
-        // Update product stock
-        product.stock += supply.quantity;
-        await product.save({ session });
+            if (!mongoose.Types.ObjectId.isValid(productId)) {
+                throw new AppError(`Invalid product ID: ${productId}`, 400);
+            }
 
-        // Update or create inventory
-        const productStock = await Inventory.findOne({ productId: supply.productId, businessCode });
-        if (productStock) {
-            productStock.quantity += supply.quantity;
-            await productStock.save({ session });
-        } else {
-            await Inventory.create([{
-                productId: supply.productId,
-                quantity: supply.quantity,
-                price: supply.price,
-                businessCode
-            }], { session });
+            // Update product stock
+            const product = await Product.findById(productId).session(session);
+            if (!product) {
+                throw new AppError(`Product not found: ${productId}`, 404);
+            }
+            product.stock += quantity;
+            await product.save({ session });
+
+            // Update or create inventory
+            let inventory = await Inventory.findOne({ productId, businessCode }).session(session);
+            if (inventory) {
+                inventory.quantity += quantity;
+                inventory.price = price; // Optional: Update price if needed
+                await inventory.save({ session });
+            } else {
+                inventory = await Inventory.create([{
+                    productId,
+                    quantity,
+                    price,
+                    businessCode
+                }], { session });
+            }
         }
 
         // Commit transaction
@@ -91,7 +97,7 @@ exports.registerSupply = async (req, res, next) => {
             status: "success",
             data: {
                 supply: newSupply[0],
-                product: product,
+                product: req.body.products,
                 inventory: productStock,
                 businessCode
             }
@@ -100,6 +106,7 @@ exports.registerSupply = async (req, res, next) => {
     } catch (err) {
         // Abort transaction on error
         await session.abortTransaction();
+        console.log('stack:', err.stack);
         return next(new AppError(err.message, 400));
     } finally {
         session.endSession();

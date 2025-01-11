@@ -10,7 +10,6 @@ export default function SuppliesForm() {
         products: [],
         quantity: '',
         price: '',
-        date: '',
         businessCode: ''
     });
 
@@ -44,7 +43,7 @@ export default function SuppliesForm() {
                 const response = await axios.get('http://localhost:4000/api/v1/products/allProducts', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
-                setProducts(response.data.data.products || []);
+                setProducts(response.data.data.products || []); //products fetched and set to state
             } catch (err) {
                 console.error('Error fetching products:', err.response?.data || err.message);
                 setError(err.response?.data?.message || 'Failed to fetch products');
@@ -53,36 +52,61 @@ export default function SuppliesForm() {
         fetchProducts();
     }, []);
 
-    const multiselectOptions = products.map((product) => ({ name: product.name, id: product._id }));
+    const handleChange = (e) => {
+        const {name, value} = e.target;
+        if(name === 'products'){
+          const selectedProducts = Array.from(e.target.selectedOptions, option => option.value);
+          setFormData({...formData, [name]: selectedProducts});
+        } else {
+          setFormData({...formData, [name]: value});
+        }
+      };
+
+    const multiselectOptions = products.map((product) => ({ name: product.name, id: product._id })); //transforming products to multiselect options
+
 
 
     const handleChangeMultiSelect = (selectedList) => {
         const selectedProductIds = selectedList.map((product) => product.id);
-        setFormData((prevFormData) => ({ ...prevFormData, products: selectedProductIds }));
-    };
+    setFormData({...formData, products: selectedProductIds});
+    };   
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
+  
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!formData.supplierId || !formData.products.length || !formData.quantity || !formData.price || !formData.date) {
-            setError('All fields are required.');
+      if(!formData.supplierId){
+        setError('Please select a supplier');
+        return;
+      }
+        if(formData.products.length === 0){
+            setError('Please select a product');
+            return;
+        }  if(formData.quantity <= 0){
+            setError('Please enter a valid quantity');
+            return;
+        }  if(formData.price <= 0){
+            setError('Please enter a valid price');
             return;
         }
+
+
         setLoading(true);
         setError('');
         try {
             const token = localStorage.getItem('token');
             const decodedToken = jwtDecode(token);
+            console.log('decoded token',decodedToken);
             const businessCode = decodedToken.businessCode;
-            const dataToSend = { businessCode, ...formData };
+            console.log('business code',businessCode);
+            const transformedProducts = formData.products.map((product) => ({ Product_id: product }));
+            console.log('transormed',transformedProducts);
+            const dataToSend = { ...formData, businessCode, products: transformedProducts };
+            console.log('data to send',dataToSend);
             const response = await axios.post('http://localhost:4000/api/v1/supplies/registerSupply', dataToSend, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            console.log(response);
+            console.log(response.data);
             navigate('/supplies');
         } catch (err) {
             console.error('Error creating supply:', err.response?.data || err.message);
@@ -113,11 +137,11 @@ export default function SuppliesForm() {
                     <Multiselect
                         className='mt-1 p-2 w-full border border-gray-300 rounded-md'
                         isObject={true}
+                        options={multiselectOptions}
                         selectedValues={formData.products.map((productId) => {
                             const product = products.find((p) => p._id === productId);
                             return product ? { name: product.name, id: product._id } : null;
-                        }).filter(Boolean)}
-                        options={multiselectOptions}
+                        }).filter(Boolean)}                  
                         displayValue="name"
                         onSelect={handleChangeMultiSelect}
                         onRemove={handleChangeMultiSelect}
@@ -132,11 +156,6 @@ export default function SuppliesForm() {
                 <div>
                     <label htmlFor='price' className='block text-sm font-medium text-gray-700'>Price</label>
                     <input className="mt-1 p-2 w-full border border-gray-300 rounded-md" type='number' name='price' id='price' onChange={handleChange} value={formData.price} required />
-                </div>
-
-                <div>
-                    <label htmlFor='date' className='block text-sm font-medium text-gray-700'>Date</label>
-                    <input className="mt-1 p-2 w-full border border-gray-300 rounded-md" type='date' name='date' id='date' onChange={handleChange} value={formData.date} required />
                 </div>
 
                 <div>

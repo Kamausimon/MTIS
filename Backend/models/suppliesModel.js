@@ -7,11 +7,15 @@ const suppliesSchema = new mongoose.Schema({
         ref: "Supplier",
         required: [true, "Supply must have a supplier"]
     },
-    productId: {
-        type: mongoose.Schema.ObjectId,
-        ref: "Product",
-        required: [true, "Supply must have a product"]
-    },
+    products: [
+        {
+           Product_id:{
+            type: mongoose.Schema.ObjectId,
+            ref: "Product",
+            required: [true, "Supply must have a product"]
+           } 
+        }
+    ],
     quantity: {
         type: Number,
         required: [true, "Supply must have a quantity"]
@@ -34,11 +38,29 @@ const suppliesSchema = new mongoose.Schema({
 
 suppliesSchema.index({ supplierId: 1, productId: 1 });
 
-suppliesSchema.pre('save', async function (next) {
-    if(!mongoose.Types.ObjectId.isValid(this.supplierId) || !mongoose.Types.ObjectId.isValid(this.productId)) {
-        next(new Error('Invalid supplier or product ID'));
+
+suppliesSchema.pre('save', function (next) {
+    if (!mongoose.Types.ObjectId.isValid(this.supplierId)) {
+        return next(new Error('Invalid supplier ID'));
     }
+
+    if (!Array.isArray(this.products)) {
+        return next(new Error('Product IDs must be an array'));
+    }
+
+    const invalidProductIds = this.products.filter(
+        (p) => !p || !mongoose.Types.ObjectId.isValid(p.Product_id)
+    );
+
+    console.log("invalidIds",invalidProductIds);
+    if (invalidProductIds.length) {
+        return next(new Error('Invalid product IDs in supply'));
+    }
+
+    next();
 });
+
+
 
 const Supplies = mongoose.model("Supplies", suppliesSchema);
 module.exports = Supplies;
