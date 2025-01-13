@@ -40,8 +40,6 @@ exports.registerSupply = async (req, res, next) => {
         // Validate required fields
         if (!supplierId) throw new AppError("Supplier ID is required", 400);
         if (!Array.isArray(products) || products.length === 0) throw new AppError("Products must be a non-empty array", 400);
-        if (!products.quantity || products.quantity <= 0) throw new AppError("Quantity must be greater than zero", 400);
-        if (!products.price ||products.price <= 0) throw new AppError("Price must be greater than zero", 400);
         if (!businessCode) throw new AppError("Business code is required", 400);
 
         const supply = { supplierId, products, businessCode };
@@ -63,8 +61,8 @@ exports.registerSupply = async (req, res, next) => {
          }
 
         // Ensure product.stock is a number
-        if (!product.stock || typeof product.stock !== 'number') {
-            product.stock = 0; // Initialize if undefined
+        if (!Product.stock || typeof Product.stock !== 'number') {
+            Product.stock = 0; // Initialize if undefined
         }
 
             if (!mongoose.Types.ObjectId.isValid(productId)) {
@@ -83,7 +81,6 @@ exports.registerSupply = async (req, res, next) => {
             let inventory = await Inventory.findOne({ productId, businessCode }).session(session);
             if (inventory) {
                 inventory.quantity += productQuantity;
-                inventory.price = productPrice; // Update price if needed
                 await inventory.save({ session });
             } else {
                 inventory = await Inventory.create([{
@@ -96,6 +93,8 @@ exports.registerSupply = async (req, res, next) => {
 
             updatedInventories.push(inventory);
         }
+
+        console.log('Updated inventories:', updatedInventories);
 
         // Commit transaction
         await session.commitTransaction();

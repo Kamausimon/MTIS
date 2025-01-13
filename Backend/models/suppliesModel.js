@@ -14,7 +14,7 @@ const suppliesSchema = new mongoose.Schema({
             ref: "Product",
             required: [true, "Supply must have a product"]
            } ,
-               quantity: {
+            quantity: {
             type: Number,
             required: [true, "Supply must have a quantity"]
         },
