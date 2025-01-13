@@ -27,6 +27,7 @@ export default function Supplies() {
         });
       
         const suppliesData = response.data.data || [];
+       
         setSupplies(suppliesData);
       } catch (err) {
         console.error(err);
@@ -46,17 +47,21 @@ export default function Supplies() {
   
         // Use Promise.all to handle multiple async requests
         const promises = supplies.map(async (supply) => {
-          const productId = supply.productId; // Assuming productId is an object with $oid
-     
+           supply.products.forEach(async (product) => {
+            const productId = product.Product_id // Assuming productId is an object with $oid
+        
+         console.log('productId', productId);
   
-          const response = await axios.get(`http://localhost:4000/api/v1/products/${productId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-  
-          const productName = response.data.data.singleProduct.name;
+            const response = await axios.get(`http://localhost:4000/api/v1/products/${productId}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
     
-  
-          productData[supply._id] = productName; // Assuming _id is an object with $oid
+            const productName = response.data.data.singleProduct.name;
+          
+        console.log('productName', productName);
+    
+            productData[supply._id] = productName; // Assuming _id is an object with $oid
+           });
         });
   
         // Wait for all requests to complete
@@ -151,8 +156,12 @@ useEffect(()=> {
                               <td className="py-2 px-4 border-b border-gray-200">
                              {productName[supply._id] || 'Loading...'}
                               </td>
-                              <td className="py-2 px-4 border-b border-gray-200">{supply.quantity}</td>
-                              <td className="py-2 px-4 border-b border-gray-200">{supply.price}</td>
+                              <td className="py-2 px-4 border-b border-gray-200">{supply.products.map((product)=> {
+                                  return <div key={product.Product_id}>{product.quantity}</div>
+                              })}</td>
+                              <td className="py-2 px-4 border-b border-gray-200">{supply.products.map((product)=> {
+                              return   <div key={product.Product_id}>{product.price}</div>
+                              })}</td>
                             </tr>
                           ))}
                         </tbody>
