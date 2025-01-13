@@ -30,37 +30,42 @@ exports.getAllSupplies = async (req, res, next) => {
     }
 };
 
-
-
-
 exports.registerSupply = async (req, res, next) => {
-    // Start session for transaction
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
-           const {supplierId, products, quantity, price, businessCode} = req.body;
+        const { supplierId, products, businessCode } = req.body;
 
         // Validate required fields
-   if(!req.body.supplierId || !req.body.products || req.body.products.length===0|| !req.body.quantity || req.body.quantity <=0|| !req.body.price|| req.body.price<=0){
-       throw new AppError('invalid input', 400);
-   }
+        if (!supplierId) throw new AppError("Supplier ID is required", 400);
+        if (!Array.isArray(products) || products.length === 0) throw new AppError("Products must be a non-empty array", 400);
+        if (!products.quantity || products.quantity <= 0) throw new AppError("Quantity must be greater than zero", 400);
+        if (!products.price ||products.price <= 0) throw new AppError("Price must be greater than zero", 400);
+        if (!businessCode) throw new AppError("Business code is required", 400);
 
-        const supply = {
-            supplierId: req.body.supplierId,
-            products: req.body.products,
-            quantity: req.body.quantity,
-            price: req.body.price,
-            businessCode: req.body.businessCode
-        };
-   
-
+        const supply = { supplierId, products, businessCode };
+        console.log('Supply:', supply);
         // Create supply record
         const newSupply = await Supplies.create([supply], { session });
-                
-         // Update inventory and stock for each product
-         for (const productItem of products) {
-            const { productId, quantity, price } = productItem;
+
+        const updatedInventories = [];
+       
+        // Update inventory and stock for each product
+        for (const productItem of products) {
+            const {Product_id:productId, quantity:productQuantity, price:productPrice } = productItem;
+
+            console.log('Product:', productId, productQuantity, productPrice);
+
+                // Check for valid product quantity
+       if (!productQuantity || typeof productQuantity !== 'number' || productQuantity <= 0) {
+        throw new AppError(`Invalid quantity for product ID: ${productId}`, 400);
+         }
+
+        // Ensure product.stock is a number
+        if (!product.stock || typeof product.stock !== 'number') {
+            product.stock = 0; // Initialize if undefined
+        }
 
             if (!mongoose.Types.ObjectId.isValid(productId)) {
                 throw new AppError(`Invalid product ID: ${productId}`, 400);
@@ -71,23 +76,25 @@ exports.registerSupply = async (req, res, next) => {
             if (!product) {
                 throw new AppError(`Product not found: ${productId}`, 404);
             }
-            product.stock += quantity;
+            product.stock += productQuantity;
             await product.save({ session });
 
             // Update or create inventory
             let inventory = await Inventory.findOne({ productId, businessCode }).session(session);
             if (inventory) {
-                inventory.quantity += quantity;
-                inventory.price = price; // Optional: Update price if needed
+                inventory.quantity += productQuantity;
+                inventory.price = productPrice; // Update price if needed
                 await inventory.save({ session });
             } else {
                 inventory = await Inventory.create([{
                     productId,
-                    quantity,
-                    price,
+                    quantity: productQuantity,
+                    price: productPrice,
                     businessCode
                 }], { session });
             }
+
+            updatedInventories.push(inventory);
         }
 
         // Commit transaction
@@ -97,21 +104,19 @@ exports.registerSupply = async (req, res, next) => {
             status: "success",
             data: {
                 supply: newSupply[0],
-                product: req.body.products,
-                inventory: productStock,
-                businessCode
-            }
+                products: products,
+                inventories: updatedInventories,
+            },
         });
-
     } catch (err) {
-        // Abort transaction on error
         await session.abortTransaction();
-        console.log('stack:', err.stack);
+        console.error("Error stack:", err.stack);
         return next(new AppError(err.message, 400));
     } finally {
         session.endSession();
     }
 };
+
 
 exports.getSupply = async (req, res, next) => {
     try{

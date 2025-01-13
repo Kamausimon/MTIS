@@ -13,17 +13,17 @@ const suppliesSchema = new mongoose.Schema({
             type: mongoose.Schema.ObjectId,
             ref: "Product",
             required: [true, "Supply must have a product"]
-           } 
+           } ,
+               quantity: {
+            type: Number,
+            required: [true, "Supply must have a quantity"]
+        },
+        price: {
+            type: Number,
+            required: [true, "Supply must have a price"]
+        },
         }
     ],
-    quantity: {
-        type: Number,
-        required: [true, "Supply must have a quantity"]
-    },
-    price: {
-        type: Number,
-        required: [true, "Supply must have a price"]
-    },
     date: {
         type: Date,
         default: Date.now()
