@@ -56,7 +56,7 @@ exports.registerSupply = async (req, res, next) => {
             console.log('Product:', productId, productQuantity, productPrice);
 
                 // Check for valid product quantity
-       if (!productQuantity || typeof productQuantity !== 'number' || productQuantity <= 0) {
+       if (!productQuantity  || productQuantity <= 0) {
         throw new AppError(`Invalid quantity for product ID: ${productId}`, 400);
          }
 

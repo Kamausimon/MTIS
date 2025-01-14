@@ -8,8 +8,6 @@ export default function SuppliesForm() {
     const [formData, setFormData] = useState({
         supplierId: '',
         products: [],
-        quantity: '',
-        price: '',
         businessCode: ''
     });
 
@@ -52,6 +50,32 @@ export default function SuppliesForm() {
         fetchProducts();
     }, []);
 
+    const handleSelectedProducts = (selectedList) => {
+        const selectedProductIds = selectedList.map((product)=> {
+            return product.id;
+        });
+        const updatedProducts = selectedProductIds.map((Product_id)=> {
+            const existingProduct = formData.products.find((p)=> p.Product_id === Product_id);
+            return existingProduct || {Product_id, quantity: 1, price: 0};
+        });
+        setFormData({...formData, products: updatedProducts});
+    }
+
+    const handleRemoveProducts = (removedList) => {
+        const removedProductIds = removedList.map((product) => product.id);
+        const updatedProducts = formData.products.filter(
+            (product) => !removedProductIds.includes(product.Product_id)
+        );
+        setFormData({ ...formData, products: updatedProducts });
+    };
+
+    const handleProductChange = (Product_id, field, value) => {
+        const updatedProducts = formData.products.map((product) =>
+            product.Product_id === Product_id ? { ...product, [field]: value } : product
+        );
+        setFormData({ ...formData, products: updatedProducts });
+    };
+
     const handleChange = (e) => {
         const {name, value} = e.target;
         if(name === 'products'){
@@ -61,15 +85,6 @@ export default function SuppliesForm() {
           setFormData({...formData, [name]: value});
         }
       };
-
-    const multiselectOptions = products.map((product) => ({ name: product.name, id: product._id })); //transforming products to multiselect options
-
-
-
-    const handleChangeMultiSelect = (selectedList) => {
-        const selectedProductIds = selectedList.map((product) => product.id);
-    setFormData({...formData, products: selectedProductIds});
-    };   
 
   
 
@@ -82,13 +97,7 @@ export default function SuppliesForm() {
         if(formData.products.length === 0){
             setError('Please select a product');
             return;
-        }  if(formData.quantity <= 0){
-            setError('Please enter a valid quantity');
-            return;
-        }  if(formData.price <= 0){
-            setError('Please enter a valid price');
-            return;
-        }
+        } 
 
 
         setLoading(true);
@@ -99,9 +108,9 @@ export default function SuppliesForm() {
             console.log('decoded token',decodedToken);
             const businessCode = decodedToken.businessCode;
             console.log('business code',businessCode);
-            const transformedProducts = formData.products.map((product) => ({ Product_id: product }));
+            const transformedProducts = formData.products.map((product) => ({ products: product }));
             console.log('transormed',transformedProducts);
-            const dataToSend = { ...formData, businessCode, products: transformedProducts };
+            const dataToSend = { products: transformedProducts,  ...formData, businessCode};
             console.log('data to send',dataToSend);
             const response = await axios.post('http://localhost:4000/api/v1/supplies/registerSupply', dataToSend, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -132,31 +141,39 @@ export default function SuppliesForm() {
                     </select>
                 </div>
 
-                <div>
-                    <label htmlFor='productId'>Product</label>
-                    <Multiselect
-                        className='mt-1 p-2 w-full border border-gray-300 rounded-md'
-                        isObject={true}
-                        options={multiselectOptions}
-                        selectedValues={formData.products.map((productId) => {
-                            const product = products.find((p) => p._id === productId);
-                            return product ? { name: product.name, id: product._id } : null;
-                        }).filter(Boolean)}                  
-                        displayValue="name"
-                        onSelect={handleChangeMultiSelect}
-                        onRemove={handleChangeMultiSelect}
-                    />
+                <div className='mt-1 p-2 w-full border border-gray-300 rounded-md'>
+                <label htmlFor="productName"> Product</label>
+                <Multiselect 
+                isObject={true}
+                  options={products.map((product)=> ({id: product._id, name: product.name}))}
+                    displayValue="name"
+                    onSelect={handleSelectedProducts}
+                    onRemove={handleRemoveProducts}
+                />
+          
                 </div>
 
-                <div>
-                    <label htmlFor='quantity' className='block text-sm font-medium text-gray-700'>Quantity</label>
-                    <input className="mt-1 p-2 w-full border border-gray-300 rounded-md" type='number' name='quantity' id='quantity' onChange={handleChange} value={formData.quantity} required />
-                </div>
-
-                <div>
-                    <label htmlFor='price' className='block text-sm font-medium text-gray-700'>Price</label>
-                    <input className="mt-1 p-2 w-full border border-gray-300 rounded-md" type='number' name='price' id='price' onChange={handleChange} value={formData.price} required />
-                </div>
+                {formData.products.map((product) => (
+                    <div key={product.Product_id} className="space-y-2">
+                        <h3>Product: {products.find((p) => p._id === product.Product_id)?.name}</h3>
+                        <label>Quantity</label>
+                        <input
+                            type="number"
+                            min="1"
+                            value={product.quantity}
+                            onChange={(e) => handleProductChange(product.Product_id, 'quantity', e.target.value)}
+                            required
+                        />
+                        <label>Price</label>
+                        <input
+                            type="number"
+                            min="0"
+                            value={product.price}
+                            onChange={(e) => handleProductChange(product.Product_id, 'price', e.target.value)}
+                            required
+                        />
+                    </div>
+                ))}
 
                 <div>
                     <button type='submit' className='bg-blue-500 text-white px-4 py-2 rounded' disabled={loading}>
@@ -164,6 +181,8 @@ export default function SuppliesForm() {
                     </button>
                 </div>
             </form>
+            {error && <p className='text-red-500'>{error}</p>}
+            {loading && <p>Submitting...</p>}
         </div>
     );
 }

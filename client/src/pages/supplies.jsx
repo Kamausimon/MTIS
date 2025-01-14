@@ -27,6 +27,7 @@ export default function Supplies() {
         });
       
         const suppliesData = response.data.data || [];
+        console.log('suppliesData', suppliesData);
        
         setSupplies(suppliesData);
       } catch (err) {
@@ -112,7 +113,10 @@ useEffect(()=> {
   fetchSupplierName();
 }, [supplies]);
 
-
+  const handleDate = (date)=> {
+    const newDate = new Date(date);
+    return newDate.toISOString().split('T')[0];
+  }
 
   const handleCreateSupply = () => {
     navigate('/createSupply');};
@@ -147,6 +151,7 @@ useEffect(()=> {
                             <th className='py-2 px-4 border-b border-gray-200'>Product</th>
                             <th  className='py-2 px-4 border-b border-gray-200' >Quantity</th>
                             <th  className='py-2 px-4 border-b border-gray-200'>Price</th>
+                            <th  className='py-2 px-4 border-b border-gray-200'>date</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -162,6 +167,7 @@ useEffect(()=> {
                               <td className="py-2 px-4 border-b border-gray-200">{supply.products.map((product)=> {
                               return   <div key={product.Product_id}>{product.price}</div>
                               })}</td>
+                              <td className='py-2 px-4 border-b border-gray-200'>{handleDate(supply.date)}</td>
                             </tr>
                           ))}
                         </tbody>
