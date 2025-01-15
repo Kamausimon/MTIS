@@ -73,8 +73,8 @@ export default function CategoryForm() {
     }}
 
     return(
-     <div>
-        <h1 className="text-3xl font-bold">Create Category</h1>
+     <div className="dark:bg-gray-900 dark:text-black">
+     
         <form onSubmit={handleSubmit}>
             <div className="mb-4">
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>

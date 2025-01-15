@@ -87,7 +87,7 @@ export default function SupplierForm() {
   return (
     <div>
       {error && <p className="text-red-500">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4  dark:bg-gray-900 dark:text-black">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
           <input
@@ -173,10 +173,10 @@ export default function SupplierForm() {
             required
           />
         </div>
-        <div>
+        <div className='mt-1 p-2 w-full border border-gray-300 rounded-md'>
           <label htmlFor="products" className="block text-sm font-medium text-gray-700">Products</label>
           <Multiselect
-  className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+
   style={{
     chips: { background: '#4CAF50', color: '#fff' },
     searchBox: { background: 'transparent', color: '#000' },

@@ -171,10 +171,10 @@ export default function ProductForm({ mode }) {
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg">
+    <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg dark:bg-slate-800">
       <h2 className="text-2xl font-bold mb-6">{mode === 'create' ? 'Create Product' : 'Edit Product'}</h2>
       {error && <p className="text-red-500 mb-4">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 dark:text-black" >
         <div>
           <label className="block text-sm font-medium text-gray-700">Name</label>
           <input

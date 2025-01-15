@@ -77,7 +77,7 @@ export default function Categories() {
             <p className="text-red-500">{error}</p>
           ) : (
             <>
-              <table className="min-w-full bg-white">
+              <table className="min-w-full bg-white  text-black dark:bg-gray-900 dark:text-white">
                 <thead>
                   <tr>
                     <th className="py-2 px-4 border-b border-gray-200">Name</th>
