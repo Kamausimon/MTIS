@@ -58,6 +58,7 @@ const businessRouter = require("./routes/businessRouter");
 const suppliesRouter = require("./routes/suppliesRouter");
 const presignedRouter = require("./routes/presignedRouter");
 const analyticsRouter = require("./routes/analyticsRouter");
+const settingsRouter = require("./routes/settingsRouter");
 
 
 const EventEmitter = require("events");
@@ -92,6 +93,7 @@ app.use("/api/v1/businesses", businessRouter);
 app.use("/api/v1/supplies", suppliesRouter);
 app.use("/api/v1", presignedRouter);
 app.use("/api/v1/analytics", analyticsRouter);
+app.use("/api/v1/settings", settingsRouter);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
