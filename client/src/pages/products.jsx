@@ -48,7 +48,7 @@ export default function Dashboard() {
   };}
 
   return (
-    <div className="flex">
+    <div className="flex bg-white text-black dark:bg-gray-900 dark:text-white">
       <Logger eventName='page_view' eventData={{page: 'products'}} />
       <Sidebar />
       <div className="flex-1 p-6">

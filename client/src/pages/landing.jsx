@@ -5,7 +5,7 @@ import Logger from '../components/logger';
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-100 to-slate-200">
+    <div className="min-h-screen bg-gradient-to-b from-slate-100 to-slate-200   dark:bg-gray-900 dark:text-white">
       <Logger eventName='page_view' eventData={{page: 'landing'}} />
       {/* Navigation */}
       <nav className="bg-white shadow-lg">

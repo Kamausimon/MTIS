@@ -58,7 +58,7 @@ export default function Categories() {
 
   return (
     <div>
-      <div className="flex">
+      <div className="flex bg-white text-black dark:bg-gray-900 dark:text-white">
         <Sidebar />
         <div className="flex-1 p-6">
            <div className="flex justify-between items-center">

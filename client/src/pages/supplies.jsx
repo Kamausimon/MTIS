@@ -125,7 +125,7 @@ useEffect(()=> {
          <div className="flex">
              
               <Sidebar />
-              <div className="flex-1 p-6">
+              <div className="flex-1 p-6 bg-white text-black dark:bg-gray-900 dark:text-white">
                <div className='flex justify-between items-center'>
                 <div>
                 <h1 className="text-3xl font-bold">Supplies records</h1>
