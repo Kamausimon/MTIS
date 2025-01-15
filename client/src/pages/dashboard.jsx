@@ -2,13 +2,13 @@
 import React from 'react';
 import Sidebar from '../components/sidebar';
 import { Link } from 'react-router-dom';
-import Logger from '../components/logger';
+
 import ThemeToggle from '../components/themeToggle';
 
 export default function Dashboard() {
   return (
     <div className="flex bg-white text-black dark:bg-gray-900 dark:text-white">
-   <Logger eventName='page_view' eventData={{page: 'dashboard'}} />
+  
       <Sidebar />
       <div className="flex-1 p-6">
            <div className='flex justify-between items-center'>

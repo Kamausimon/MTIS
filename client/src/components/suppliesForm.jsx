@@ -128,10 +128,10 @@ export default function SuppliesForm() {
     return (
         <div>
             {error && <p className="text-red-500">{error}</p>}
-            <form onSubmit={handleSubmit} className='space-y-4'>
-                <div className='mt-1 p-2 w-full border border-gray-300 rounded-md'>
+            <form onSubmit={handleSubmit} className='space-y-4 dark:bg-gray-900 dark:text-white'>
+                <div className='mt-1 p-2 w-full border border-gray-300 rounded-md dark:bg-gray-900 dark:text-white'>
                     <label htmlFor='supplierId'>Supplier</label>
-                    <select name='supplierId' id='supplierId' onChange={handleChange} value={formData.supplierId} required>
+                    <select name='supplierId' id='supplierId' onChange={handleChange} value={formData.supplierId} required className='dark:bg-gray-900 dark:text-white'>
                         <option value=''>Select Supplier</option>
                         {suppliers.map((supplier) => (
                             <option key={supplier._id} value={supplier._id}>
@@ -141,9 +141,17 @@ export default function SuppliesForm() {
                     </select>
                 </div>
 
-                <div className='mt-1 p-2 w-full border border-gray-300 rounded-md'>
+                <div className='mt-1 p-2 w-full border border-gray-300 rounded-md dark:bg-gray-900 dark:text-white'>
                 <label htmlFor="productName"> Product</label>
+                <div>
+                    
+                </div>
                 <Multiselect 
+                style={{
+                    chips: { background: '#4CAF50', color: '#fff' },
+                    searchBox: { background: 'transparent', color: '#000' },
+                    option:{background: '#fff', color: '#000'},
+                }}
                 isObject={true}
                   options={products.map((product)=> ({id: product._id, name: product.name}))}
                     displayValue="name"
@@ -154,10 +162,11 @@ export default function SuppliesForm() {
                 </div>
 
                 {formData.products.map((product) => (
-                    <div key={product.Product_id} className="space-y-2">
+                    <div key={product.Product_id} className="space-y-2 dark:bg-gray-900 dark:text-white">
                         <h3>Product: {products.find((p) => p._id === product.Product_id)?.name}</h3>
                         <label>Quantity</label>
                         <input
+                            className='dark:bg-gray-200 dark:text-black'
                             type="number"
                             min="1"
                             value={product.quantity}
@@ -166,6 +175,7 @@ export default function SuppliesForm() {
                         />
                         <label>Price</label>
                         <input
+                        className='dark:bg-gray-200 dark:text-black'
                             type="number"
                             min="0"
                             value={product.price}

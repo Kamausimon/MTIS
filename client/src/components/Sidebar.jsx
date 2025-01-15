@@ -29,7 +29,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="h-screen bg-gray-800 text-white w-64 flex flex-col sticky top-0">
+    <div className="h-screen bg-gray-800 text-white w-64 flex flex-col sticky top-0 dark:bg-gray-800 dark:text-white">
       <div className="flex items-center justify-center h-16 bg-gray-900">
         <h1 className="text-2xl font-bold">MTIS</h1>
       </div>

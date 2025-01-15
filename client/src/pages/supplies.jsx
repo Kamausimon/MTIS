@@ -144,10 +144,10 @@ useEffect(()=> {
                  ) : error ?(
                    <p className='text-red-too'>{error}</p>
                  ) : (
-                     <table className='table-auto w-full bg-white'>
+                     <table className='table-auto w-full bg-white dark:bg-gray-900 dark:text-white'>
                         <thead>
                           <tr>
-                            <th className='py-2 px-4 border-b border-gray-200'>Supplier</th>
+                            <th className='py-2 px-4 border-b border-gray-200 '>Supplier</th>
                             <th className='py-2 px-4 border-b border-gray-200'>Product</th>
                             <th  className='py-2 px-4 border-b border-gray-200' >Quantity</th>
                             <th  className='py-2 px-4 border-b border-gray-200'>Price</th>

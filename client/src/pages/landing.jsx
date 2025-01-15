@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Footer from './Footer';
-import Logger from '../components/logger';
+
 
 export default function Landing() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-100 to-slate-200   dark:bg-gray-900 dark:text-white">
-      <Logger eventName='page_view' eventData={{page: 'landing'}} />
+ 
       {/* Navigation */}
       <nav className="bg-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

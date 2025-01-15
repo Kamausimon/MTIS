@@ -177,6 +177,11 @@ export default function SupplierForm() {
           <label htmlFor="products" className="block text-sm font-medium text-gray-700">Products</label>
           <Multiselect
   className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+  style={{
+    chips: { background: '#4CAF50', color: '#fff' },
+    searchBox: { background: 'transparent', color: '#000' },
+    option:{background: '#fff', color: '#000'},
+}}
   isObject={true}
   options={multiselectOptions}
   selectedValues= { formData.products.map((productId) => {
