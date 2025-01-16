@@ -19,8 +19,8 @@ import CreateCategory from './pages/createCategory';
 import CreateSupply from './pages/createSupply';
 import Suppliers from './pages/suppliers';
 import CreateSupplier from './pages/createSupplier';
-
-
+import CreateOrder from './pages/createOrder';
+import ViewOrder from './pages/viewOrder';
 
 function App() {
   return (
@@ -45,6 +45,8 @@ function App() {
       <Route path="/createSupply" element={<CreateSupply />} />
       <Route path="/suppliers" element={<Suppliers />} />
       <Route path="/createSupplier" element={<CreateSupplier />} />
+      <Route path='/createOrder' element={<CreateOrder />} />
+      <Route path='/viewOrder/:id' element={<ViewOrder />} />
    
             <Route path="*" element={<h1>Not Found</h1>} />
      </Routes>

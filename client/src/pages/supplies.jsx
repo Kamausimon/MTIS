@@ -142,7 +142,7 @@ useEffect(()=> {
                  {loading ? (
                   <p>Loading...</p>
                  ) : error ?(
-                   <p className='text-red-too'>{error}</p>
+                   <p className='text-red-500'>{error}</p>
                  ) : (
                      <table className='table-auto w-full bg-white dark:bg-gray-900 dark:text-white'>
                         <thead>
