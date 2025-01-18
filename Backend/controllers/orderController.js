@@ -144,7 +144,7 @@ exports.createOrder = async (req, res, next) => {
         product_name: item.product_name,
         quantity: item.quantity,
         price: item.price,
-        item_subtotal: item.subtotal,
+        item_subtotal: item.item_subtotal,
       })),
       subtotal: newOrder.subtotal,
       total: newOrder.total,
