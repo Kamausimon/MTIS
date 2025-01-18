@@ -67,13 +67,24 @@ export default function ViewOrder() {
         fetchProductName();
     }, [order]);
 
-    const handleEditOrder = () => {
-        navigate(`/editOrder/${id}`);
+    const handleEditOrder = (orderId) => {
+        navigate(`/editOrder/${orderId}`);
     };
 
-    const handleDeleteOrder = async () => {
-        navigate(`/deleteOrder/${id}`);
+    const handleDeleteOrder = async (orderId) => {
+        if(window.confirm('Are you sure you want to delete this order?')){
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.delete(`http://localhost:4000/api/v1/orders/${orderId}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                console.log(response.data);
+                navigate('/orders');
+            } catch (err) {
+                console.error(err);
+                setError('Failed to delete the order. Please try again later.');}
     };
+}
 
     const handlePrice = (price) =>  {
         return price.toLocaleString()
@@ -86,13 +97,13 @@ export default function ViewOrder() {
                     <h1 className="text-2xl mb-6">Order Details</h1>
                     <div className="space-x-2">
                         <button
-                            onClick={handleEditOrder}
+                            onClick={() => handleEditOrder(order._id)}
                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                         >
                             Edit Order
                         </button>
                         <button
-                            onClick={handleDeleteOrder}
+                            onClick={() => handleDeleteOrder(order._id)}
                             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                         >
                             Delete Order

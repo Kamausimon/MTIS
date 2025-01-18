@@ -85,6 +85,7 @@ export default function Orders(){
                                     <th  className='py-2 px-4 border-b border-gray-200'>Customer Name</th>
                                     <th  className='py-2 px-4 border-b border-gray-200'>Customer Email</th>
                                     <th  className='py-2 px-4 border-b border-gray-200'>Order Date</th>
+                                    <th className='py-2 px-4 border-b border-gray-200'>Order Status</th>
                                     <th  className='py-2 px-4 border-b border-gray-200'>Actions</th>
                                 </tr>
                             </thead>
@@ -95,6 +96,7 @@ export default function Orders(){
                                         <td className="py-2 px-4 border-b border-gray-200">{order.customer_name}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{order.customer_email}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">{handleDate(order.createdAt)}</td>
+                                        <td className="py-2 px-4 border-b border-gray-200">{order.order_status}</td>
                                         <td className="py-2 px-4 border-b border-gray-200">
                                             <button onClick={()=>handleView(order._id)} className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>                            
                                                     View 
