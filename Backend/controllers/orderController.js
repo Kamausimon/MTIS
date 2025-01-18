@@ -74,7 +74,7 @@ const generateInvoicePDF = async (invoice) => {
     const product = await Product.findById(item.product_id).select('name'); // Fetch product name
     const product_name = product ? product.name : 'Unknown Product';
     doc.text(
-      `${index + 1}. ${product_name} - ${item.quantity} x ksh${item.price} = ksh${item.subtotal}`
+      `${index + 1}. ${product_name} - ${item.quantity} x ksh${item.price} = ksh${item.item_subtotal}`
     );
   }
 
@@ -96,9 +96,10 @@ exports.createOrder = async (req, res, next) => {
     const orderNumber = uuidv4();
     const items = req.body.items.map((item) => ({
       Product_id: item.Product_id,
+      product_name: item.product_name,
       quantity: item.quantity,
       price: item.price,
-      subtotal: item.quantity * item.price,
+      item_subtotal: item.quantity * item.price,
     }));
     for(const item of req.body.items){
       const product  = await Product.findById(item.Product_id);
@@ -113,7 +114,7 @@ exports.createOrder = async (req, res, next) => {
     }
     const tax = req.body.tax || 0;
     const shippingCost = req.body.shipping_cost || 0;
-    const totalAmount = items.reduce((acc, item) => acc + parseFloat(item.subtotal), 0) + parseFloat(tax) + parseFloat(shippingCost);
+    const totalAmount = items.reduce((acc, item) => acc + parseFloat(item.item_subtotal), 0) + parseFloat(tax) + parseFloat(shippingCost);
 
   if(!validator.isEmail(req.body.customer_email)){
     return next(new AppError("Please provide a valid email", 400));
@@ -127,7 +128,7 @@ exports.createOrder = async (req, res, next) => {
       customer_address: req.body.customer_address,
       items: items,
       total: totalAmount,
-      subtotal: items.reduce((acc, item) => acc + item.subtotal, 0),
+      subtotal: items.reduce((acc, item) => acc + item.item_subtotal, 0),
       tax: req.body.tax,
       shipping_cost: req.body.shipping_cost,
       businessCode: req.body.businessCode,
@@ -143,7 +144,7 @@ exports.createOrder = async (req, res, next) => {
         product_name: item.product_name,
         quantity: item.quantity,
         price: item.price,
-        subtotal: item.subtotal,
+        item_subtotal: item.subtotal,
       })),
       subtotal: newOrder.subtotal,
       total: newOrder.total,

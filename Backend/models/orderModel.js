@@ -22,8 +22,9 @@ const orderSchema = new mongoose.Schema(
           required: true,
         },
         quantity: { type: Number, required: true },
+        product_name: { type: String},
         price: { type: Number, required: true },
-        subtotal: { type: Number, required: true },
+        item_subtotal: { type: Number, required: true },
       },
     ],
 
