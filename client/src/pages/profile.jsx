@@ -11,8 +11,8 @@ export default function Profile() {
     businessCode: ''
   });
   const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
+    passwordCurrent: '',
+    password: '',
     passwordConfirm: ''
   });
   const [loading, setLoading] = useState(true);
@@ -32,7 +32,6 @@ export default function Profile() {
       const response = await axios.get(`http://localhost:4000/api/v1/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log(response);
       setUserData(response.data.data.user);
       setLoading(false);
     } catch (err) {
@@ -67,13 +66,15 @@ export default function Profile() {
         passwordData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
+    
       setSuccess('Password updated successfully');
       setPasswordData({
-        currentPassword: '',
-        newPassword: '',
+        passwordCurrent: '',
+        password: '',
         passwordConfirm: ''
       });
     } catch (err) {
+      console.error(err);
       setError(err.response?.data?.message || 'Password update failed');
     }
   };
@@ -145,8 +146,8 @@ export default function Profile() {
               <label className="block text-sm font-medium text-gray-700">Current Password</label>
               <input
                 type="password"
-                value={passwordData.currentPassword}
-                onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                value={passwordData.passwordCurrent}
+                onChange={(e) => setPasswordData({...passwordData, passwordCurrent: e.target.value})}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
@@ -154,8 +155,8 @@ export default function Profile() {
               <label className="block text-sm font-medium text-gray-700">New Password</label>
               <input
                 type="password"
-                value={passwordData.newPassword}
-                onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                value={passwordData.password}
+                onChange={(e) => setPasswordData({...passwordData, password: e.target.value})}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
