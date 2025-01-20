@@ -1,22 +1,42 @@
-const mongooose = require('mongoose');
+const mongoose = require('mongoose');
 
-const settingsSchema = new mongooose.Schema({
-  //key value pair
-  key: {
-    type: String,
-    required: true,
-  }, 
-  value: {
-    type: String,
-    required: true,
-  }, 
-  //businessCode 
+const settingsSchema = new mongoose.Schema({
   businessCode: {
     type: String,
     required: true,
   },
+  profile: {
+    username: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+  },
+  notifications: {
+    emailNotifications: {
+      type: Boolean,
+      default: false,
+    },
+    smsNotifications: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  privacy: {
+    showProfilePicture: {
+      type: Boolean,
+      default: true,
+    },
+    showLastSeen: {
+      type: Boolean,
+      default: false,
+    },
+  },
 }, {
-    timestamps: true,
+  timestamps: true,
 });
 
-module.exports = mongooose.model('Settings', settingsSchema);
+module.exports = mongoose.model('Settings', settingsSchema);

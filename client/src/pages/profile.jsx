@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 export default function Profile() {
   const [userData, setUserData] = useState({
@@ -26,12 +27,16 @@ export default function Profile() {
   const fetchUserData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:3000/api/v1/users/me', {
+      const decodedToken = jwtDecode(token);
+      const id = decodedToken.id;
+      const response = await axios.get(`http://localhost:4000/api/v1/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log(response);
       setUserData(response.data.data.user);
       setLoading(false);
     } catch (err) {
+      console.error(err);
       setError('Failed to fetch user data');
       setLoading(false);
     }
@@ -42,7 +47,7 @@ export default function Profile() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.patch(
-        'http://localhost:3000/api/v1/users/updateMe',
+        'http://localhost:4000/api/v1/users/updateMe',
         userData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -58,7 +63,7 @@ export default function Profile() {
     try {
       const token = localStorage.getItem('token');
       await axios.patch(
-        'http://localhost:4000/api/v1/users/updateMyPassword',
+        'http://localhost:4000/api/v1/users/updatePassword',
         passwordData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -85,7 +90,7 @@ export default function Profile() {
     <div className="min-h-screen bg-slate-100 py-12 px-4 sm:px-6 lg:px-8  dark:bg-gray-900 dark:text-white">
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="bg-white p-8 rounded-xl shadow-lg">
-          <h2 className="text-2xl font-bold mb-6">Profile Settings</h2>
+          <h2 className="text-2xl font-bold mb-6">Profile Details</h2>
           
           {error && (
             <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
@@ -106,6 +111,7 @@ export default function Profile() {
                 value={userData.name}
                 onChange={(e) => setUserData({...userData, name: e.target.value})}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                readOnly
               />
             </div>
             <div>
@@ -115,6 +121,7 @@ export default function Profile() {
                 value={userData.email}
                 disabled
                 className="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm"
+                readOnly
               />
             </div>
             <div>
@@ -124,14 +131,10 @@ export default function Profile() {
                 value={userData.businessCode}
                 disabled
                 className="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm"
+                readOnly
               />
             </div>
-            <button
-              type="submit"
-              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Update Profile
-            </button>
+          
           </form>
         </div>
 
