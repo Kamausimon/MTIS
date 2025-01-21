@@ -141,9 +141,13 @@ export default function Signup() {
           </div>
         </form>
 
-        <div className="text-sm text-center">
+        <div className="text-sm text-center flex flex-col items-center">
           <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
             Already have an account? Sign in
+          </Link>
+
+          <Link to='/registerBusiness' className=" mt-4 p-3 font-medium text-blue-600 hover:text-blue-500">
+            Register Business
           </Link>
         </div>
       </div>

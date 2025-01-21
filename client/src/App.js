@@ -22,6 +22,9 @@ import CreateSupplier from './pages/createSupplier';
 import CreateOrder from './pages/createOrder';
 import ViewOrder from './pages/viewOrder';
 import EditOrder from './pages/editOrder';
+import RegisterBiz from './pages/registerBusiness';
+import ConfirmEmail from  './components/confirmEmail';
+import CreateAdmin from './pages/createAdmin';
 
 function App() {
   return (
@@ -30,6 +33,7 @@ function App() {
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/registerBusiness" element={<RegisterBiz/>} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/products" element={<Products />} />
       <Route path="/products/create" element={<CreateProduct />} />
@@ -49,6 +53,8 @@ function App() {
       <Route path='/createOrder' element={<CreateOrder />} />
       <Route path='/viewOrder/:id' element={<ViewOrder />} />
       <Route path='/editOrder/:id' element={<EditOrder />} />
+      <Route path='/confirmEmail/:token' element={<ConfirmEmail />} />
+      <Route path='/create-admin/:id/:businessCode' element={<CreateAdmin />} />
    
             <Route path="*" element={<h1>Not Found</h1>} />
      </Routes>

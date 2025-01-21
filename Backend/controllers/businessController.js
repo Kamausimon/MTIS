@@ -97,9 +97,7 @@ exports.registerBusiness = async (req, res, next) => {
 
     //create a confirmation token
     const token = businessSignToken(newBusiness._id);
-    const confirmationUrl = `${req.protocol}://${req.get(
-      "host"
-    )}/api/v1/businesses/confirmEmail/${token}`;
+    const confirmationUrl = `http://localhost:3000/confirmEmail/${token}`;
 
     //send the confirmation email
     await sendEmail({
@@ -143,7 +141,7 @@ exports.confirmBusiness = async (req, res, next) => {
     await business.save({ validateBeforeSave: false });
 
     const loginToken = jwt.sign(
-      { id: business._id },
+      { id: business._id, businessCode: business.businessCode},
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
@@ -151,6 +149,8 @@ exports.confirmBusiness = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       message: 'Email confirmed successfully',
+      business: business._id,
+      businessCode: business.businessCode,
       token: loginToken
     });
   } catch (err) {
@@ -203,11 +203,37 @@ exports.protectBusiness = async (req, res, next) => {
   }
 };
 
+exports.getBusiness = async (req, res, next) => {
+  try {
+    console.log('req.body', req.body);
+    console.log('req.params', req.params);
+
+    const business = await Business.findById( req.body.business);
+    if (!business) {
+      return next(new AppError('Business not found', 404));
+    }
+    req.business = business;
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+
 
 exports.createAdmin = async (req, res, next) => {
   try {
-    //find the business
+
     const business = req.business;
+    //find the business
+    if(!req.business){
+      return next(new AppError('Business not found', 404));
+    }
+
+    console.log(req.business);
+    console.log('req.body', req.body);
+    console.log('req.params', req.params);
+
 
     //create the admin user
     const adminUser = await User.create({
@@ -221,6 +247,15 @@ exports.createAdmin = async (req, res, next) => {
       businessCode: business.businessCode,
       
     });
+
+    //send the businessCode to the client for login and cofirmation
+    if(adminUser ){
+      await sendEmail({
+        email: adminUser.email,
+        subject: "Business Code",
+        message: `Your business code is: ${business.businessCode}`,
+      })
+    }
 
     //generate token
     createSendToken(adminUser, 201, res);
