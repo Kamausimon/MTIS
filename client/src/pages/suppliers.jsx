@@ -116,31 +116,36 @@ export default function Suppliers() {
                 </tr>
               </thead>
               <tbody>
-                {suppliers.map((supplier) => (
-                  <tr key={supplier._id}>
-                    <td className="py-2 px-4 border-b border-gray-200">
-                      {supplier.name}
-                    </td>
-                    <td className="py-2 px-4 border-b border-gray-200">
-                      {supplier.phone}
-                    </td>
-                    <td className="py-2 px-4 border-b border-gray-200">
-                      {supplier.email}
-                    </td>
-                    <td className="py-2 px-4 border-b border-gray-200">
-                      {supplierProducts[supplier._id] &&
-                      supplierProducts[supplier._id].length > 0 ? (
-                        <ul>
-                          {supplierProducts[supplier._id].map((product, index) => (
-                            <li key={index}>{product.name}</li>
-                          ))}
-                        </ul>
-                      ) : (
-                        "No products"
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                {suppliers.length > 0 ? (
+                       suppliers.map((supplier) => (
+                        <tr key={supplier._id}>
+                          <td className="py-2 px-4 border-b border-gray-200">
+                            {supplier.name}
+                          </td>
+                          <td className="py-2 px-4 border-b border-gray-200">
+                            {supplier.phone}
+                          </td>
+                          <td className="py-2 px-4 border-b border-gray-200">
+                            {supplier.email}
+                          </td>
+                          <td className="py-2 px-4 border-b border-gray-200">
+                            {supplierProducts[supplier._id] &&
+                            supplierProducts[supplier._id].length > 0 ? (
+                              <ul>
+                                {supplierProducts[supplier._id].map((product, index) => (
+                                  <li key={index}>{product.name}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              "No products"
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                ) :  (
+                  <p>No suppliers found</p>
+                )
+                }
               </tbody>
             </table>
           )}

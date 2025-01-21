@@ -155,21 +155,26 @@ useEffect(()=> {
                           </tr>
                         </thead>
                         <tbody>
-                          {supplies.map((supply) => (
-                            <tr key={supply._id}>
-                              <td className="py-2 px-4 border-b border-gray-200">{supplierName[supply._id] || 'Loading...'}</td>
-                              <td className="py-2 px-4 border-b border-gray-200">
-                             {productName[supply._id] || 'Loading...'}
-                              </td>
-                              <td className="py-2 px-4 border-b border-gray-200">{supply.products.map((product)=> {
-                                  return <div key={product.Product_id}>{product.quantity}</div>
-                              })}</td>
-                              <td className="py-2 px-4 border-b border-gray-200">{supply.products.map((product)=> {
-                              return   <div key={product.Product_id}>{product.price}</div>
-                              })}</td>
-                              <td className='py-2 px-4 border-b border-gray-200'>{handleDate(supply.date)}</td>
-                            </tr>
-                          ))}
+                          {supplies.length > 0 ? (
+                            supplies.map((supply) => (
+                              <tr key={supply._id}>
+                                <td className="py-2 px-4 border-b border-gray-200">{supplierName[supply._id] || 'Loading...'}</td>
+                                <td className="py-2 px-4 border-b border-gray-200">
+                               {productName[supply._id] || 'Loading...'}
+                                </td>
+                                <td className="py-2 px-4 border-b border-gray-200">{supply.products.map((product)=> {
+                                    return <div key={product.Product_id}>{product.quantity}</div>
+                                })}</td>
+                                <td className="py-2 px-4 border-b border-gray-200">{supply.products.map((product)=> {
+                                return   <div key={product.Product_id}>{product.price}</div>
+                                })}</td>
+                                <td className='py-2 px-4 border-b border-gray-200'>{handleDate(supply.date)}</td>
+                              </tr>
+                            ))
+                          ) : (
+                             <p>No supplies found</p>
+                          )
+                          }
                         </tbody>
                      </table>
                  )}

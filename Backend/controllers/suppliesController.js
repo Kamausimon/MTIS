@@ -9,7 +9,7 @@ const mongoose = require("mongoose");
 
 exports.getAllSupplies = async (req, res, next) => {
     try{
-        const allSupplies = await Supplies.find();
+        const allSupplies = await Supplies.find({ businessCode: req.user.businessCode });
 
         if(!allSupplies){
             return next(new AppError("No supplies found", 404));

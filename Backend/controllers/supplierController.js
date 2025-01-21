@@ -7,9 +7,9 @@ dotenv.config({ path: "../config.env" });
 
 exports.getAllSuppliers = async (req, res, next) => {
   try {
-    const suppliers = await supplier.find();
+    const suppliers = await supplier.find({ businessCode: req.user.businessCode });
 
-    if (!suppliers || suppliers.length === 0) {
+    if (!suppliers ) {
       return next(new AppError("No suppliers found", 404));
     }
 

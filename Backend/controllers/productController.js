@@ -10,7 +10,7 @@ dotenv.config({ path: "../config.env" });
 
 exports.getAllProducts = async (req, res, next) => {
   try {
-    const products = await product.find();
+    const products = await product.find({ businessCode: req.user.businessCode });
 
     if (!products) {
       return next(new AppError("No products found", 404));

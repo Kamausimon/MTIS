@@ -17,7 +17,7 @@ dotenv.config({ path: "../config.env" });
 //create a new order
 exports.getAllOrders = async (req, res, next) => {
   try {
-    const allOrders = await order.find();
+    const allOrders = await order.find({ businessCode: req.user.businessCode });
 
     if (!allOrders) {
       return next(new AppError("No orders found", 404));
