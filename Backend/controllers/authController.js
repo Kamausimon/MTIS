@@ -224,9 +224,7 @@ exports.forgotPassword = async (req, res, next) => {
 
   await user.save({ validateBeforeSave: false });
 
-  const resetUrl = `${req.protocol}://${req.get(
-    "host"
-  )}/api/v1/users/resetPassword/${resetToken}?businessCode=${
+  const resetUrl = `http://localhost:3000/resetPassword/${resetToken}?businessCode=${
     req.body.businessCode
   }`;
 
@@ -243,6 +241,7 @@ exports.forgotPassword = async (req, res, next) => {
       message: "Token sent to email!",
       resetToken,
       resetUrl,
+      businessCode: req.body.businessCode,
     }); 
   } catch {
     user.passwordResetToken = undefined;
@@ -261,18 +260,25 @@ exports.forgotPassword = async (req, res, next) => {
 exports.resetPassword = async (req, res, next) => {
   try {
     // 1. Extract the token from params
-    const { token } = req.params;
+    if(!req.params.token){
+     return next(new AppError('Token not found', 400));
+    }
+    console.log('Reset token:', req.params.token);
 
     // 2. Hash the token
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
     console.log('Hashed token:', hashedToken);
 
     // 3. Find the user with the token, valid expiry, and matching business code
     const user = await User.findOne({
       passwordResetToken: hashedToken,
       passwordResetExpires: { $gt: Date.now() },
-      businessCode: req.body.businessCode,
     });
+
+    console.log('User:', user);
+    console.log('user.passwordResetToken:', user.passwordResetToken);
+    console.log('user.passwordResetExpires:', user.passwordResetExpires);
+    console.log('user.businessCode:', user.businessCode);
 
     // 4. If user not found, throw an error
     if (!user) {

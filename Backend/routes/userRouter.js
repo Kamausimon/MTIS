@@ -9,7 +9,7 @@ router.route("/signup").post(authController.signup); // Signup
 router.route("/login").post(authController.login); // Login
 router.route("/logout").post(authController.logout); // Logout
 router.route("/forgotPassword").post(authController.forgotPassword); // Forgot password
-router.route("/resetPassword/:token").patch(authController.resetPassword); // Reset password
+router.route("/resetPassword/:token/:businessCode").patch(authController.resetPassword); // Reset password
 router
   .route("/updatePassword")
   .patch(authController.protectRoute, authController.updatePassword); // Update password

@@ -25,6 +25,7 @@ import EditOrder from './pages/editOrder';
 import RegisterBiz from './pages/registerBusiness';
 import ConfirmEmail from  './components/confirmEmail';
 import CreateAdmin from './pages/createAdmin';
+import  ResetPassword from './pages/resetPassword';
 
 function App() {
   return (
@@ -55,6 +56,8 @@ function App() {
       <Route path='/editOrder/:id' element={<EditOrder />} />
       <Route path='/confirmEmail/:token' element={<ConfirmEmail />} />
       <Route path='/create-admin/:id/:businessCode' element={<CreateAdmin />} />
+      <Route path='/resetPassword/:token' element={<ResetPassword />} />
+
    
             <Route path="*" element={<h1>Not Found</h1>} />
      </Routes>
