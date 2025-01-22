@@ -30,7 +30,7 @@ export default function Signup() {
     try {
       const response = await axios.post('http://localhost:4000/api/v1/users/signup', formData);
       localStorage.setItem('token', response.data.token);
-      navigate('/home');
+      navigate('/login');
     } catch (err) {
       setError(err.response?.data?.message || 'Signup failed');
     } finally {

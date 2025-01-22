@@ -61,7 +61,6 @@ exports.signup = async (req, res, next) => {
       email,
       password,
       passwordConfirm,
-      role,
       businessCode // Changed from businessName
     } = req.body;
 
@@ -89,13 +88,15 @@ exports.signup = async (req, res, next) => {
       return next(new AppError('Business email not confirmed yet', 400));
     }
 
+    //normalize email 
+    const normalizedEmail = email.toLowerCase();
+
     // Create new user
     const newUser = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       password,
       passwordConfirm,
-      role,
       businessName: business.businessName,
       businessCode,
       business: business._id
@@ -118,9 +119,12 @@ exports.login = async (req, res, next) => {
         new AppError("Please provide email, password and businessCode", 400)
       );
     }
+
+    //normalize email
+    const normalizedEmail = email.toLowerCase();
     //check if user exists and password is correct
     const user = await User.findOne({
-      email,
+      email: normalizedEmail,
       businessCode,
       status: "active",
     }).select("+password");
@@ -210,8 +214,17 @@ exports.restrictTo = (...roles) => {
 };
 
 exports.forgotPassword = async (req, res, next) => {
+ const { email, businessCode } = req.body;
+
+  if (!email || !businessCode) {
+    return next(new AppError("Please provide email and business code", 400));
+  }
+
+  //normalize email
+  const normalizedEmail = email.toLowerCase();
+
   const user = await User.findOne({
-    email: req.body.email,
+    email: normalizedEmail,
     businessCode: req.body.businessCode,
   });
   if (!user) {
