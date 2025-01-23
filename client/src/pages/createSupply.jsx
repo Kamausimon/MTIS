@@ -1,5 +1,5 @@
 import React from 'react';
-import Sidebar from '../components/sidebar';
+import Sidebar from '../components/Sidebar';
 import SuppliesForm from '../components/suppliesForm';
 
 export default function CreateSupplier() {

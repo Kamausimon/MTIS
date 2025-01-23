@@ -1,6 +1,6 @@
 // src/pages/EditProduct.jsx
 import React from 'react';
-import Sidebar from '../components/sidebar';
+import Sidebar from '../components/Sidebar';
 import ProductForm from '../components/productForm';
 
 

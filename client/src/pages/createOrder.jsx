@@ -1,5 +1,5 @@
 import React from 'react';
-import Sidebar from '../components/sidebar';
+import Sidebar from '../components/Sidebar';
 
 import OrderForm from '../components/orderForm';
 

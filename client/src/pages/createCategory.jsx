@@ -1,5 +1,5 @@
 import React from 'react';
-import Sidebar from '../components/sidebar';
+import Sidebar from '../components/Sidebar';
 import CategoryForm from '../components/categoryForm';
 
 export default function CreateCategory() {
