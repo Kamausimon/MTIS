@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
 
-const Sidebar = () => {
+export default function Sidebar () {
   const location = useLocation();
   const [role, setRole] = useState('');
 
@@ -56,4 +56,3 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
