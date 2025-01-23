@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function EditOrder() {
   const [formData, setFormData] = useState({
     order_number: '',
@@ -25,7 +27,7 @@ export default function EditOrder() {
         }
 
         const response = await axios.get(
-          `http://localhost:4000/api/v1/orders/${id}`,
+          `${url}/api/v1/orders/${id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setFormData(response.data.data.oneOrder || {});
@@ -64,7 +66,7 @@ export default function EditOrder() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.patch(
-        `http://localhost:4000/api/v1/orders/${id}`,
+        `${url}/api/v1/orders/${id}`,
         formData,
         {
           headers: { Authorization: `Bearer ${token}` },

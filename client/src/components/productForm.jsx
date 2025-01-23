@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import {jwtDecode}from 'jwt-decode';
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function ProductForm({ mode }) {
   const [formData, setFormData] = useState({
     name: '',
@@ -35,7 +37,7 @@ export default function ProductForm({ mode }) {
     const fetchCategories = async () => {
       try {
           const token = localStorage.getItem('token');
-          const response = await axios.get('http://localhost:4000/api/v1/categories/allCategories', {
+          const response = await axios.get(`${url}/api/v1/categories/allCategories`, {
           headers: { Authorization:  `Bearer ${token}` }
           });
          const childCategories = response.data.data;
@@ -59,7 +61,7 @@ export default function ProductForm({ mode }) {
       const fetchProduct = async () => {
         try { 
           const token = localStorage.getItem('token');
-          const response = await axios.get(`http://localhost:4000/api/v1/products/${id}`, {
+          const response = await axios.get(`${url}/api/v1/products/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
            const product = response.data.data.singleProduct;
@@ -91,7 +93,7 @@ export default function ProductForm({ mode }) {
     if (!file) return;
 
     const sanitizedFileName = file.name.replace(/\s+/g, '_');
-
+   
 
     const fileName = encodeURIComponent(file.name);
     const fileType = encodeURIComponent(file.type);
@@ -103,7 +105,7 @@ export default function ProductForm({ mode }) {
     try {
       // Step 1: Request pre-signed URL from backend
       const token = localStorage.getItem('token');
-      const presignedUrlResponse = await axios.get('http://localhost:4000/api/v1/presigned-url', {
+      const presignedUrlResponse = await axios.get(`https://mtis-1.onrender.com/api/v1/presigned-url`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { filename: sanitizedFileName, fileType: file.type,  },
       });
@@ -150,13 +152,13 @@ export default function ProductForm({ mode }) {
       const token = localStorage.getItem('token');
       if (mode === 'create') {
         await axios.post(
-          'http://localhost:4000/api/v1/products/create',
+          `${url}/api/v1/products/create`,
           formData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.patch(
-          `http://localhost:4000/api/v1/products/${id}`,
+          `${url}/api/v1/products/${id}`,
           formData,
           { headers: { Authorization: `Bearer ${token}` } }
         );

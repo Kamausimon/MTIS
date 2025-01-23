@@ -4,6 +4,8 @@ import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function Analytics() {
   const [analyticsData, setAnalyticsData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,7 @@ export default function Analytics() {
           return;
         }
 
-        const response = await axios.get('http://localhost:4000/api/v1/analytics/getAnalytics', {
+        const response = await axios.get(`${url}/api/v1/analytics/getAnalytics`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAnalyticsData(response.data.data.analytics);

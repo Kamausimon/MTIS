@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
 import Multiselect from 'multiselect-react-dropdown';
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function SupplierForm() {
   const [formData, setFormData] = useState({
     name: '',
@@ -26,7 +28,7 @@ export default function SupplierForm() {
     const fetchProducts = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:4000/api/v1/products/allProducts', {
+        const response = await axios.get(`${url}/api/v1/products/allProducts`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setProducts(response.data.data.products || []);
@@ -71,7 +73,7 @@ export default function SupplierForm() {
         const businessCode = decodedToken.businessCode;
         const transformedProducts = formData.products.map((product) => ({Product_id: product}));
         const dataToSend  = {businessCode, ...formData, products: transformedProducts};
-      const response = await axios.post('http://localhost:4000/api/v1/suppliers/createSupplier', dataToSend, {
+      const response = await axios.post(`${url}/api/v1/suppliers/createSupplier`, dataToSend, {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log(response.data);

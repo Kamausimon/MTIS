@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import ThemeToggle from '../components/themeToggle';
 import axios from 'axios';
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function Dashboard() {
   const [metrics, setMetrics] = useState({
     totalSuppliers: 0,
@@ -25,7 +27,7 @@ export default function Dashboard() {
           return;
         }
 
-        const response = await axios.get('http://localhost:4000/api/v1/dashboard', {
+        const response = await axios.get(`${url}/api/v1/dashboard`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

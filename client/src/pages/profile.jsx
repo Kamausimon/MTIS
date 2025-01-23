@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function Profile() {
   const [userData, setUserData] = useState({
     name: '',
@@ -29,7 +31,7 @@ export default function Profile() {
       const token = localStorage.getItem('token');
       const decodedToken = jwtDecode(token);
       const id = decodedToken.id;
-      const response = await axios.get(`http://localhost:4000/api/v1/users/${id}`, {
+      const response = await axios.get(`${url}/api/v1/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUserData(response.data.data.user);
@@ -46,7 +48,7 @@ export default function Profile() {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.patch(
-        'http://localhost:4000/api/v1/users/updateMe',
+        `${url}/api/v1/users/updateMe`,
         userData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -62,7 +64,7 @@ export default function Profile() {
     try {
       const token = localStorage.getItem('token');
       await axios.patch(
-        'http://localhost:4000/api/v1/users/updatePassword',
+        `${url}/api/v1/users/updatePassword`,
         passwordData,
         { headers: { Authorization: `Bearer ${token}` } }
       );

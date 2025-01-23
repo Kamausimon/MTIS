@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function Categories() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +24,7 @@ export default function Categories() {
           return;
         }
 
-        const response = await axios.get('http://localhost:4000/api/v1/categories/allCategories', {
+        const response = await axios.get(`${url}/api/v1/categories/allCategories`, {
           headers: { Authorization: `Bearer ${token}` },
         });
      const childCategories = response.data.data;

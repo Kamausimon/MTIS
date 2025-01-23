@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+
+const url = process.env.REACT_APP_API_URL;
 
 export default function Settings() {
   const [settings, setSettings] = useState({
@@ -33,7 +35,7 @@ export default function Settings() {
         }
         const decodedToken = jwtDecode(token);
         const businessCode = decodedToken.businessCode;
-        const response = await axios.get('http://localhost:4000/api/v1/settings/getSettings', {
+        const response = await axios.get(`${url}/api/v1/settings/getSettings`, {
           headers: { Authorization: `Bearer ${token}`, businessCode },
         });
         setSettings(response.data.data);
@@ -61,7 +63,7 @@ export default function Settings() {
   const handleSubmit = async (section) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:4000/api/v1/settings/${section}`, settings[section], {
+      await axios.patch(`${url}/api/v1/settings/${section}`, settings[section], {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('Settings updated successfully');

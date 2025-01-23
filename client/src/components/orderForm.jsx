@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import {jwtDecode} from "jwt-decode";
 import Multiselect from "multiselect-react-dropdown";
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function OrderForm() {
   const [formData, setFormData] = useState({
     order_date: "",
@@ -27,7 +29,7 @@ export default function OrderForm() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:4000/api/v1/products/allProducts",
+          `${url}/api/v1/products/allProducts`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -123,7 +125,7 @@ export default function OrderForm() {
       }));
       const orderData = { ...formData,  businessCode, items: transformedProducts };
       const response = await axios.post(
-        "http://localhost:4000/api/v1/orders/createOrder",
+        `${url}/api/v1/orders/createOrder`,
         orderData,
         {
           headers: { Authorization: `Bearer ${token}` },

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function RegisterBusiness() {
     const [formData, setFormData] = useState({
         businessName: '',
@@ -27,7 +29,7 @@ export default function RegisterBusiness() {
 
         try {
            
-            const response = await axios.post('http://localhost:4000/api/v1/businesses/registerBusiness', formData);
+            const response = await axios.post(`${url}/api/v1/businesses/registerBusiness`, formData);
             localStorage.setItem('token', response.data.token);
             navigate('/login');
         } catch (err) {

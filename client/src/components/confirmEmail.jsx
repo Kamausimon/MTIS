@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+const url = process.env.REACT_APP_API_URL;
 
 const ConfirmEmail = () => {
   const { token } = useParams(); // Extract the token from the URL
@@ -9,7 +10,7 @@ const ConfirmEmail = () => {
   useEffect(() => {
     const confirmEmail = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/v1/businesses/confirmEmail/${token}`, {
+        const response = await fetch(`${url}/api/v1/businesses/confirmEmail/${token}`, {
           method: 'PATCH',
         });
 

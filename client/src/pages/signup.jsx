@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const url = process.env.REACT_APP_API_URL;
+
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -28,7 +30,7 @@ export default function Signup() {
     }
 
     try {
-      const response = await axios.post('http://localhost:4000/api/v1/users/signup', formData);
+      const response = await axios.post(`${url}/api/v1/users/signup`, formData);
       localStorage.setItem('token', response.data.token);
       navigate('/login');
     } catch (err) {

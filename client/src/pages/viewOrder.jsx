@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function ViewOrder() {
     const { id } = useParams();
     const [order, setOrder] = useState({});
@@ -24,7 +26,7 @@ export default function ViewOrder() {
                 }
 
                 const response = await axios.get(
-                    `http://localhost:4000/api/v1/orders/${id}`,
+                    `${url}/api/v1/orders/${id}`,
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
@@ -49,7 +51,7 @@ export default function ViewOrder() {
                 // Use Promise.all to handle multiple async requests
                 const promises = order.items.map(async (item) => {
                     const response = await axios.get(
-                        `http://localhost:4000/api/v1/products/${item.Product_id}`,
+                        `${url}/api/v1/products/${item.Product_id}`,
                         { headers: { Authorization: `Bearer ${token}` } }
                     );
                   
@@ -75,7 +77,7 @@ export default function ViewOrder() {
         if(window.confirm('Are you sure you want to delete this order?')){
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.delete(`http://localhost:4000/api/v1/orders/${orderId}`, {
+                const response = await axios.delete(`${url}/api/v1/orders/${orderId}`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 console.log(response.data);

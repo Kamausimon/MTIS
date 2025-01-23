@@ -3,6 +3,8 @@ import Sidebar from '../components/Sidebar';
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 
+const url = process.env.REACT_APP_API_URL;
+
 
 export default function Orders(){
     const [orders, setOrders] = useState([]);
@@ -21,7 +23,7 @@ export default function Orders(){
                     return;
                 }
 
-                const response = await axios.get('http://localhost:4000/api/v1/orders/getAllOrders',{
+                const response = await axios.get(`${url}/api/v1/orders/getAllOrders`,{
                     headers: {Authorization: `Bearer ${token}`},
                 });
              

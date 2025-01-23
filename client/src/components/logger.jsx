@@ -2,6 +2,8 @@ import  {useEffect} from 'react';
 import axios from 'axios';
 import{jwtDecode} from 'jwt-decode';
 
+const url = process.env.REACT_APP_API_URL;
+
 const Logger = ({eventName, eventData  = {}}) => {
     useEffect(()=> {
         const logEvent = async () => {
@@ -13,7 +15,7 @@ const Logger = ({eventName, eventData  = {}}) => {
                  return;
              }
 
-                const response = await axios.post('http://localhost:4000/api/v1/analytics/logger',{
+                const response = await axios.post(`${url}/api/v1/analytics/logger`,{
                     eventName,
                     eventData,
                     action: 'click',

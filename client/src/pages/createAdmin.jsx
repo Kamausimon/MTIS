@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+const url = process.env.REACT_APP_API_URL;
+
 
 export default function CreateAdmin() {
     const {id, businessCode} = useParams();
@@ -30,7 +32,7 @@ export default function CreateAdmin() {
 
         try {
             
-            const response = await fetch(`http://localhost:4000/api/v1/businesses/createAdmin`, {
+            const response = await fetch(`${url}/api/v1/businesses/createAdmin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

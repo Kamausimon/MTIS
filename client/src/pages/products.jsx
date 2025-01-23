@@ -3,6 +3,8 @@ import Sidebar from '../components/Sidebar';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const url = process.env.REACT_APP_API_URL;
+
 
 export default function Dashboard() {
   const [products, setProducts] = useState([]);
@@ -14,7 +16,7 @@ export default function Dashboard() {
     const fetchProducts = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:4000/api/v1/products/allProducts', {
+        const response = await axios.get(`${url}/api/v1/products/allProducts`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setProducts(response.data.data.products || []);
@@ -39,7 +41,7 @@ export default function Dashboard() {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:4000/api/v1/products/${productId}`, {
+      await axios.delete(`${url}/api/v1/products/${productId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProducts(products.filter((product) => product._id !== productId));

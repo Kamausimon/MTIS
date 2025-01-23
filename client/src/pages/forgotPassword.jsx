@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
+const url = process.env.REACT_APP_API_URL;
+
 
 export default function ForgotPassword() {
   const [formData, setFormData] = useState({
@@ -18,7 +20,7 @@ export default function ForgotPassword() {
     setError('');
 
     try {
-      await axios.post('http://localhost:4000/api/v1/users/forgotPassword', formData);
+      await axios.post(`${url}/api/v1/users/forgotPassword`, formData);
       setSuccess(true);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to process request');

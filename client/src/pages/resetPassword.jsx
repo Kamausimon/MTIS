@@ -2,6 +2,8 @@ import React , {useState} from 'react';
 import {useParams } from 'react-router-dom';
 import {useNavigate} from 'react-router-dom';
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function ResetPassword() {
     const {token, businessCode}= useParams();
     const navigate = useNavigate();
@@ -32,7 +34,7 @@ const handleChange = (e) => {
                 return;
               }
               
-          const response = await fetch(`http://localhost:4000/api/v1/users/resetPassword/${token}/${businessCode}`, {
+          const response = await fetch(`${url}/api/v1/users/resetPassword/${token}/${businessCode}`, {
             method:'PATCH',
             headers: {
                 'Content-Type': 'application/json'

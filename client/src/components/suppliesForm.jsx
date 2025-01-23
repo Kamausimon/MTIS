@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import Multiselect from 'multiselect-react-dropdown';
 import {jwtDecode} from 'jwt-decode';
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function SuppliesForm() {
     const [formData, setFormData] = useState({
         supplierId: '',
@@ -22,7 +24,7 @@ export default function SuppliesForm() {
         const fetchSuppliers = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:4000/api/v1/suppliers/getAllSuppliers', {
+                const response = await axios.get(`${url}/api/v1/suppliers/getAllSuppliers`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setSuppliers(response.data.data.suppliers || []);
@@ -38,7 +40,7 @@ export default function SuppliesForm() {
         const fetchProducts = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:4000/api/v1/products/allProducts', {
+                const response = await axios.get(`${url}/api/v1/products/allProducts`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setProducts(response.data.data.products || []); //products fetched and set to state
@@ -112,7 +114,7 @@ export default function SuppliesForm() {
             console.log('transormed',transformedProducts);
             const dataToSend = { products: transformedProducts,  ...formData, businessCode};
             console.log('data to send',dataToSend);
-            const response = await axios.post('http://localhost:4000/api/v1/supplies/registerSupply', dataToSend, {
+            const response = await axios.post(`${url}/api/v1/supplies/registerSupply`, dataToSend, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             console.log(response.data);

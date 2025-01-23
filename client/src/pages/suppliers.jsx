@@ -3,6 +3,8 @@ import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function Suppliers() {
   const [suppliers, setSuppliers] = useState([]);
   const [supplierProducts, setSupplierProducts] = useState({});
@@ -22,7 +24,7 @@ export default function Suppliers() {
         }
 
         const response = await axios.get(
-          "http://localhost:4000/api/v1/suppliers/getAllSuppliers",
+          `${url}/api/v1/suppliers/getAllSuppliers`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -51,7 +53,7 @@ export default function Suppliers() {
             const productIds = supplier.products.map((p) => p.Product_id);
             const productPromises = productIds.map((id) =>
               axios
-                .get(`http://localhost:4000/api/v1/products/${id}`, {
+                .get(`${url}/api/v1/products/${id}`, {
                   headers: { Authorization: `Bearer ${token}` },
                 })
                 .then((res) => res.data.data.singleProduct)
