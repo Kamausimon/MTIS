@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-
+const url = process.env.React_APP_API_URL;
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -20,7 +20,7 @@ export default function Login() {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:4000/api/v1/users/login', formData);
+      const response = await axios.post( `${url}/api/v1/users/login`, formData);
       localStorage.setItem('token', response.data.token);
       navigate('/dashboard');
     } catch (err) {

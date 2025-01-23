@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+
 const ConfirmEmail = () => {
   const { token } = useParams(); // Extract the token from the URL
   const navigate = useNavigate();

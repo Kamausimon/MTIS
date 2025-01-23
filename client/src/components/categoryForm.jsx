@@ -4,7 +4,10 @@ import {useNavigate} from "react-router-dom";
 import { jwtDecode} from 'jwt-decode';
 
 
+const url = process.env.REACT_APP_API_URL;
+
 export default function CategoryForm() {
+    
     const [formData, setFormData] = useState({
         name: "",
         description: "",
@@ -24,7 +27,7 @@ export default function CategoryForm() {
         const fetchCategories = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:4000/api/v1/categories/allCategories', {
+                const response = await axios.get(`${url}/api/v1/categories/allCategories`, {
                     headers: {Authorization: `Bearer ${token}`}
                 });
                 console.log(response.data);
@@ -60,7 +63,7 @@ export default function CategoryForm() {
             const businessCode = decodedToken.businessCode;
     const dataToSend = {...formData, businessCode};
 
-            const response = await axios.post('http://localhost:4000/api/v1/categories/createCategory', dataToSend, {
+            const response = await axios.post(`${url}/api/v1/categories/createCategory`, dataToSend, {
                 headers: {Authorization: `Bearer ${token}`}
             });
             console.log(response.data);
@@ -93,7 +96,13 @@ export default function CategoryForm() {
                     ))}
                 </select>
             </div>
-            <button type="submit" className="bg-blue-500 text-white p-2 rounded-md">Create Category</button>
+            <button 
+         type="submit" 
+           className="bg-blue-500 text-white p-2 rounded-md"
+            disabled={loading}
+               >
+                {loading ? 'Submitting...' : 'Create Category'}
+                  </button>
         </form>
         {loading && <p>Loading...</p>}
         {error && <p className="text-red-500">{error}</p>}
