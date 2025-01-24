@@ -11,6 +11,9 @@ const globalErrorHandler = require("./controllers/errorController");
 const AppError = require("./utils/AppError");
 
 const app = express();
+
+app.trust('trust proxy', true);
+
 require("dotenv").config({ path: "./config.env" });
 
 app.use(helmet());
