@@ -12,7 +12,7 @@ const AppError = require("./utils/AppError");
 
 const app = express();
 
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 
 require("dotenv").config({ path: "./config.env" });
 
@@ -24,6 +24,9 @@ const limiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 100,
   message: "Too many requests from this IP, please try again after 10 minutes",
+  keyGenerator: (req) => {
+    return req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.ip;
+  },
   headers: true,
 });
 
