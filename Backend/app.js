@@ -100,6 +100,11 @@ app.use("/api/v1/analytics", analyticsRouter);
 app.use("/api/v1/settings", settingsRouter);
 app.use("/api/v1/dashboard", dashboardRouter);
 
+app.get('/', (req, res) => {
+  res.status(200).send('Welcome to the API');
+});
+
+
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
