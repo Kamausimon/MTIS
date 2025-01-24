@@ -12,7 +12,7 @@ const AppError = require("./utils/AppError");
 
 const app = express();
 
-app.trust('trust proxy', true);
+app.set('trust proxy', true);
 
 require("dotenv").config({ path: "./config.env" });
 
