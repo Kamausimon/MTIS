@@ -11,8 +11,6 @@ const validator = require("validator");
 
 
 
-dotenv.config({ path: "../config.env" });
-
 //create a jwt sign token function
 const signToken = (user) => {
   return jwt.sign(
