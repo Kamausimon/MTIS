@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const seedCategories = require("./categorySeeder");
 const dotenv = require('dotenv');
 
-dotenv.config({ path: '../config.env' });
+
 
 
 const DB = `mongodb+srv://kamausimon217:${process.env.DATABASE_PASSWORD}@cluster0.qip8z.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;

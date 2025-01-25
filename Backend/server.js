@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const connectToDATABASE = require("./db");
 
 // Configure dotenv
-dotenv.config({ path: "./config.env" });
+
 
 // Call the database connection
 const connect = async () => {

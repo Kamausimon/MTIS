@@ -3,7 +3,7 @@ const AWS = require('aws-sdk');
 const router = express.Router();
 const dotenv = require('dotenv');
 
-dotenv.config({path: '../config.env'});
+
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY,

@@ -6,7 +6,7 @@ const Category = require("../models/categoryModel");
 
 
 
-dotenv.config({ path: "../config.env" });
+
 
 exports.getAllProducts = async (req, res, next) => {
   try {

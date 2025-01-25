@@ -12,7 +12,7 @@ const PDFDocument = require("pdfkit");
 const fs = require("fs");
 const path = require("path");
 
-dotenv.config({ path: "../config.env" });
+
 
 //create a new order
 exports.getAllOrders = async (req, res, next) => {

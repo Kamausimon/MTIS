@@ -4,7 +4,7 @@ const AppError = require("../utils/AppError");
 const dotenv = require("dotenv");
 
 
-dotenv.config({ path: "../config.env" });
+
 
 exports.getAllCategories = async (req, res, next) => {
   try {
