@@ -21,10 +21,10 @@ export default function Login() {
 
     try {
       const response = await axios.post( `${url}/api/v1/users/login`, formData);
+      localStorage.setItem('token', response.data.token);
       console.log('token1', response)
       console.log('token from login 1', response.data.data.token);
       console.log('token from login', response.data.token);
-      localStorage.setItem('token', response.data.token);
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
