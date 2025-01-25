@@ -118,7 +118,7 @@ exports.signup = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { email, password, businessCode } = req.body;
-    console.log('req.body:', req.body, email, password, businessCode, req.headers);
+
     //check if email and password exist
     if (!email || !password || !businessCode) {
       return next(
