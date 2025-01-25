@@ -14,7 +14,9 @@ const app = express();
 
 app.set('trust proxy', 1);
 
-require("dotenv").config({ path: "./config.env" });
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: './config.env' });
+}
 
 app.use(helmet());
 app.options("*", cors());

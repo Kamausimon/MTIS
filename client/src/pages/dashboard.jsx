@@ -22,6 +22,7 @@ export default function Dashboard() {
     const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem('token');
+        console.log('token',token);
         if (!token) {
           setError('No token found');
           setLoading(false);
