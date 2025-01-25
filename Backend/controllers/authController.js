@@ -162,7 +162,7 @@ exports.login = async (req, res, next) => {
 exports.protectRoute = async (req, res, next) => {
   try {
     let token;
-    console.log('req.headers:', req.headers);
+  
     //get token and check if it exists
     if (
       req.headers.authorization &&
