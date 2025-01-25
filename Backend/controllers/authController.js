@@ -33,9 +33,7 @@ const createSendToken = (user, statusCode, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Ensure cookies are only sent over HTTPS in production
-    sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax', // Allow cross-site cookies in production
-    domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined, // Allow cookies for all subdomains
+ 
   };
 
   //set cookie options to secure if in production
