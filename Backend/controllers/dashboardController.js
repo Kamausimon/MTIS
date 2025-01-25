@@ -7,6 +7,7 @@ const supplies = require('../models/suppliesModel');
 
 exports.getDashboardData = async (req, res, next) => {
      try{
+          console.log('request received', req.headers, req.user, req.body, req.query);
             const totalSuppliers = await suppliers.countDocuments({ businessCode: req.user.businessCode });
             const totalSupplies = await supplies.countDocuments({ businessCode: req.user.businessCode });
             const totalOrders = await orders.countDocuments({ businessCode: req.user.businessCode });

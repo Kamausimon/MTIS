@@ -18,7 +18,10 @@ require("dotenv").config({ path: "./config.env" });
 
 app.use(helmet());
 app.options("*", cors());
-app.use(cors());
+app.use(cors({
+  origin: "https://mtis-2.onrender.com" , // allow only this domain
+  credentials: true,
+}));
 
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000,
