@@ -37,7 +37,7 @@ const createSendToken = (user, statusCode, res) => {
     sameSite: process.env.NODE_ENV === "production" ? 'None' : 'Lax', // Allow cross-site cookies in production
     domain: process.env.NODE_ENV === "production" ? ".onrender.com" : undefined, // Allow cookies for all subdomains
   };
-  
+
   //set cookie options to secure if in production
   if (process.env.NODE_ENV === "production") {
     cookieOptions.secure = true;
@@ -49,6 +49,8 @@ const createSendToken = (user, statusCode, res) => {
 
   //remove the password from the output
   user.password = undefined;
+
+  console.log('token:', token);
 
   //send the response
   res.status(statusCode).json({
