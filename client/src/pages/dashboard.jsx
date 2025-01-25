@@ -5,7 +5,7 @@ import ThemeToggle from '../components/themeToggle';
 import axios from 'axios';
 
 const url = process.env.REACT_APP_API_URL;
-console.log(url);
+console.log('url',url);
 
 export default function Dashboard() {
   const [metrics, setMetrics] = useState({
