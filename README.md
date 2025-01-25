@@ -1,6 +1,6 @@
-# Inventory Management Application
+# Multi Tenant Inventory Management system
 
-The Inventory Management Application is a powerful tool designed to help businesses efficiently manage their inventory. It provides features for tracking products, managing stock levels, generating reports, and more. This application is built to streamline inventory operations and improve productivity.
+MTIS is a powerful tool designed to help businesses efficiently manage their inventory. It provides features for tracking products, managing stock levels, generating reports, and more. This application is built to streamline inventory operations and improve productivity.
 
 ## Features
 
