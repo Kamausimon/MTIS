@@ -28,7 +28,7 @@ export default function Dashboard() {
           return;
         }
 
-        const response = await axios.get(`${url}/api/v1/dashboard`, {
+        const response = await axios.get(`${url}/api/v1/dashboard/getDashData`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
