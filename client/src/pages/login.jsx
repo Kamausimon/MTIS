@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const url = process.env.React_APP_API_URL;
+const url = process.env.REACT_APP_API_URL;
 
 export default function Login() {
   const [formData, setFormData] = useState({
