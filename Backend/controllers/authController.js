@@ -118,6 +118,7 @@ exports.signup = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { email, password, businessCode } = req.body;
+    console.log('req.body:', req.body, email, password, businessCode, req.headers);
     //check if email and password exist
     if (!email || !password || !businessCode) {
       return next(
@@ -134,13 +135,22 @@ exports.login = async (req, res, next) => {
       status: "active",
     }).select("+password");
 
-  
+  console.log('user found:', user);
 
     if (user.status === "inactive") {
+      console.log('User is inactive');
       return next(new AppError("Please create a new account", 400));
     }
 
-    if (!user || !(await user.correctPassword(password, user.password))) {
+    if(!user){
+      console.log('User not found');
+      return next(new AppError("User not found", 404));
+    }
+
+    const isPasswordCorrect = await user.correctPassword(password, user.password);
+    console.log('isPasswordCorrect:', isPasswordCorrect);
+
+    if ( !isPasswordCorrect) {
       return next(new AppError("Incorrect email or password", 401));
     }
 
@@ -149,6 +159,7 @@ exports.login = async (req, res, next) => {
     //if everything is ok, send token to client
     createSendToken(user, 200, res);
   } catch (err) {
+    console.error('Error logging in:', err);
     res.status(400).json({
       status: "fail",
       message: err.message,

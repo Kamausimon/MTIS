@@ -20,13 +20,18 @@ export default function Login() {
     setError('');
 
     try {
-      const response = await axios.post( `${url}/api/v1/users/login`, formData);
+      const response = await axios.post( `${url}/api/v1/users/login`, {
+        email: formData.email,
+        password: formData.password,
+        businessCode: formData.businessCode
+      });
+      console.log('login response', response.data);
       localStorage.setItem('token', response.data.token);
-      console.log('token1', response)
-      console.log('token from login 1', response.data.data.token);
-      console.log('token from login', response.data.token);
+    
+    
       navigate('/dashboard');
     } catch (err) {
+      console.error('error logging in',err);
       setError(err.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
