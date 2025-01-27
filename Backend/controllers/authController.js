@@ -9,7 +9,7 @@ const dotenv = require("dotenv");
 const Business = require("../models/businessModel");
 const validator = require("validator");
 
-
+const url = process.env.REACT_APP_URL;
 
 //create a jwt sign token function
 const signToken = (user) => {
@@ -255,7 +255,7 @@ exports.forgotPassword = async (req, res, next) => {
 
   await user.save({ validateBeforeSave: false });
 
-  const resetUrl = `http://localhost:3000/resetPassword/${resetToken}?businessCode=${
+  const resetUrl = `${url}/resetPassword/${resetToken}?businessCode=${
     req.body.businessCode
   }`;
 
