@@ -8,10 +8,12 @@ const sendEmail = async (options) => {
     //create a transporter
     const transporter = nodemailer.createTransport({
       service: 'gmail',
+      port:587,
       auth: {
         user: process.env.EMAIL_USERNAME,
         pass: process.env.EMAIL_PASSWORD,
       },
+      secure: true,
     });
 
     // Ensure that the options object contains the email recipient(s)
