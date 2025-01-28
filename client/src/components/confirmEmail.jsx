@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const url = process.env.REACT_APP_API_URL;
+console.log('url',url);
 
 const ConfirmEmail = () => {
   const { token } = useParams(); // Extract the token from the URL
