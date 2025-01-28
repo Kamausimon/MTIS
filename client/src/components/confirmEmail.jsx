@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const url = process.env.REACT_APP_API_URL;
 
@@ -10,9 +11,7 @@ const ConfirmEmail = () => {
   useEffect(() => {
     const confirmEmail = async () => {
       try {
-        const response = await fetch(`${url}/api/v1/businesses/confirmEmail/${token}`, {
-          method: 'PATCH',
-        });
+        const response = await axios.patch(`${url}/api/v1/businesses/confirmEmail/${token}`);
 
         console.log('response',response);
 
