@@ -105,8 +105,8 @@ exports.registerBusiness = async (req, res, next) => {
     await sendEmail({
       email: newBusiness.email,
       subject: "Email Confirmation",
-      html: `<p>Click the link below to confirm your email:</p>
-      <a href="${confirmationUrl}" style="color: blue; text-decoration: underline;">Confirm Email</a>` 
+      message: `Click on the link to confirm your email `, 
+      html: "<a href=" + confirmationUrl + ">Click here to confirm your email</a>",
     });
 
     //send the response
