@@ -124,23 +124,29 @@ exports.registerBusiness = async (req, res, next) => {
 exports.confirmBusiness = async (req, res, next) => {
   try {
     const { token } = req.params;
+    console.log('token from params', token);
     
     if (!token) {
+      console.log('no token provided');
       return next(new AppError('No token provided', 400));
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const business = await Business.findById(decoded.id);
+
     if (!business) {
+      console.log('business not found');
       return next(new AppError('Business not found or token invalid', 404));
     }
 
     if (business.isConfirmed) {
+      console.log('email already confirmed');
       return next(new AppError('Email already confirmed', 400));
     }
 
     business.isConfirmed = true;
+    console.log('business', business);
     await business.save({ validateBeforeSave: false });
 
     const loginToken = jwt.sign(
@@ -148,6 +154,7 @@ exports.confirmBusiness = async (req, res, next) => {
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
+    console.log('loginToken', loginToken);
 
     res.status(200).json({
       status: 'success',
