@@ -27,7 +27,7 @@ const sendEmail = async (options) => {
       from: "noreply@MTIS.org",
       to: options.email,
       subject: options.subject,
-      text: options.message,
+      text: options.html,
     };
 
     //send the email

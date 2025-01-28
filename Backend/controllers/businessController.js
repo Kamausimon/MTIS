@@ -8,6 +8,7 @@ const dotenv = require("dotenv");
 
 
 
+
 const url = process.env.REACT_APP_URL;
 
 //create a jwt sign token function
@@ -97,13 +98,15 @@ exports.registerBusiness = async (req, res, next) => {
 
     //create a confirmation token
     const token = businessSignToken(newBusiness._id);
-    const confirmationUrl = `${url}/confirmEmail/${token}`;
+     const confirmationUrl = `${url}/confirmEmail/${token}`;
+  
 
     //send the confirmation email
     await sendEmail({
       email: newBusiness.email,
       subject: "Email Confirmation",
-      message: `Click on the link to confirm your email: ${confirmationUrl}`,
+      html: `<p>Click the link below to confirm your email:</p>
+      <a href="${confirmationUrl}" style="color: blue; text-decoration: underline;">Confirm Email</a>` 
     });
 
     //send the response
