@@ -14,9 +14,9 @@ const ConfirmEmail = () => {
       try {
         const response = await axios.patch(`https://mtis-1.onrender.com/api/v1/businesses/confirmBusiness/${token}`);
 
-        console.log('response',response);
+        console.log('response data:',response.data);
 
-        const data = await response.json();
+      const data = response.data;
         console.log('data',data);
 
         if (response.ok) {

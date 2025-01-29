@@ -22,6 +22,7 @@ app.use(helmet());
 app.options("*", cors());
 app.use(cors({
   origin: "https://mtis-2.onrender.com" , // allow only this domain
+  methods : ['GET', 'POST', 'PATCH', 'DELETE'],
   credentials: true,
 }));
 
