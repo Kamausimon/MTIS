@@ -98,7 +98,7 @@ exports.registerBusiness = async (req, res, next) => {
 
     //create a confirmation token
     const token = businessSignToken(newBusiness._id);
-     const confirmationUrl = `${url}/confirmEmail/${token}`;
+     const confirmationUrl = `https://mtis-1.onrender.com/api/v1/confirmEmail/${token}`;
    console.log('confirmationUrl', confirmationUrl);
 
     //send the confirmation email
