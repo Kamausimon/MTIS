@@ -12,7 +12,7 @@ const ConfirmEmail = () => {
   useEffect(() => {
     const confirmEmail = async () => {
       try {
-        const response = await axios.patch(`https://mtis-1.onrender.com/api/v1/businesses/confirmBusiness/${token}`);
+        const response = await axios.patch(`${url}/api/v1/businesses/confirmBusiness/${token}`);
 
         console.log('response data:',response.data);
 
