@@ -105,7 +105,7 @@ export default function ProductForm({ mode }) {
     try {
       // Step 1: Request pre-signed URL from backend
       const token = localStorage.getItem('token');
-      const presignedUrlResponse = await axios.get(`https://mtis-1.onrender.com/api/v1/presigned-url`, {
+      const presignedUrlResponse = await axios.get(`http://localhost:4000/api/v1/presigned-url`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { filename: sanitizedFileName, fileType: file.type,  },
       });
