@@ -21,11 +21,11 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(helmet());
 app.options("*", cors());
 
-// app.use(cors({
-//   origin: "https://mtis-2.onrender.com" , // allow only this domain
-//   methods : ['GET', 'POST', 'PATCH', 'DELETE'],
-//   credentials: true,
-// }));
+app.use(cors({
+  origin: "https://frontend-production-26c4.up.railway.app" , // allow only this domain
+  methods : ['GET', 'POST', 'PATCH', 'DELETE'],
+  credentials: true,
+}));
 
 const limiter = rateLimit({
   windowMs: 10 * 60 * 1000,
