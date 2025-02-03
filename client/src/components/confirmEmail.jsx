@@ -21,7 +21,7 @@ const ConfirmEmail = () => {
 
         if (response.ok) {
           alert(data.message);
-          navigate(`https://frontend-production-26c4.up.railway.app/create-admin/${data.business}/${data.businessCode}`); // Redirect to the next step
+          navigate(`/create-admin/${data.business}/${data.businessCode}`); // Redirect to the next step
         } else {
           alert(data.message || 'Error confirming email.');
         }
