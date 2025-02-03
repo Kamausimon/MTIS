@@ -3,37 +3,41 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const url = process.env.REACT_APP_API_URL;
-console.log('url',url);
 
 const ConfirmEmail = () => {
-  const { token } = useParams(); // Extract the token from the URL
+  const { token } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     const confirmEmail = async () => {
       try {
-        const response = await axios.patch(`${url}/api/v1/businesses/confirmBusiness/${token}`);
+        const response = await axios.patch(
+          `${url}/api/v1/businesses/confirmBusiness/${token}`
+        );
 
-        console.log('response data:',response.data);
+        console.log('Response:', response);
 
-      const data = response.data;
-        console.log('data',data);
+        // Axios wraps the response data in "data" property
+        const { data } = response;
 
-        if (response.ok) {
+        if (response.status >= 200 && response.status < 300) {
           alert(data.message);
-          navigate(`/create-admin/${data.business}/${data.businessCode}`); // Redirect to the next step
+          navigate(`/create-admin/${data.business}/${data.businessCode}`);
         } else {
           alert(data.message || 'Error confirming email.');
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('Something went wrong. Please try again later.');
+        if (error.response) {
+          // Server responded with non-2xx status
+          alert(error.response.data.message || 'Confirmation failed');
+        } else {
+          alert('Network error. Please try again later.');
+        }
       }
     };
 
-    if (token) {
-      confirmEmail();
-    }
+    if (token) confirmEmail();
   }, [token, navigate]);
 
   return <p>Confirming your email...</p>;
