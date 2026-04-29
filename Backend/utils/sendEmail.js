@@ -8,13 +8,12 @@ const sendEmail = async (options) => {
     //create a transporter
     const transporter = nodemailer.createTransport({
       host:'smtp.gmail.com',
-      service: 'gmail',
       port:587,
       auth: {
         user: process.env.EMAIL_USERNAME,
         pass: process.env.EMAIL_PASSWORD,
       },
-      secure: true,
+      secure: false,
     });
 
     // Ensure that the options object contains the email recipient(s)
@@ -32,7 +31,13 @@ const sendEmail = async (options) => {
     };
 
     //send the email
-    await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions, function(error, info){
+  if (error) {
+    console.log('Error:', error);
+  } else {
+    console.log('Email sent: ', info.response);
+  }
+});
   } catch (err) {
     console.log(err);
   }
